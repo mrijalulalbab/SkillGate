@@ -46,7 +46,7 @@ export default function ProposalSubmissionPage() {
   const [bidAmount, setBidAmount] = useState("");
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [files, setFiles] = useState<{name: string, size: string, type: 'image' | 'pdf'}[]>([]);
+  const [files, setFiles] = useState<{name: string, size: string, type: 'image' | 'pdf' | 'doc'}[]>([]);
 
   useEffect(() => {
     if (params?.id) {
@@ -109,11 +109,23 @@ export default function ProposalSubmissionPage() {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files).map(file => {
         const isPdf = file.type === 'application/pdf' || file.name.endsWith('.pdf');
+        const isWord = file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+                       file.type === 'application/msword' || 
+                       file.name.endsWith('.docx') || 
+                       file.name.endsWith('.doc');
         const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
+        
+        let type: 'pdf' | 'doc' | 'image' = 'image';
+        if (isPdf) {
+          type = 'pdf';
+        } else if (isWord) {
+          type = 'doc';
+        }
+
         return {
           name: file.name,
           size: `${sizeInMb} MB`,
-          type: isPdf ? 'pdf' as const : 'image' as const
+          type
         };
       });
       setFiles([...files, ...newFiles]);
@@ -339,14 +351,14 @@ export default function ProposalSubmissionPage() {
             >
               <UploadCloud className="w-10 h-10 text-muted-foreground mb-3" />
               <p className="text-sm font-semibold text-foreground mb-1">Klik untuk unggah atau seret file ke sini</p>
-              <p className="text-xs text-muted-foreground">Mendukung PDF, JPG, PNG</p>
+              <p className="text-xs text-muted-foreground">Mendukung PDF, DOC, DOCX, JPG, PNG</p>
               <input 
                 type="file" 
                 ref={fileInputRef} 
                 onChange={handleFileChange} 
                 className="hidden" 
                 multiple 
-                accept=".pdf,.jpg,.jpeg,.png" 
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" 
               />
             </div>
             
@@ -356,7 +368,13 @@ export default function ProposalSubmissionPage() {
                 {files.map((f, i) => (
                   <div key={i} className="flex items-center gap-3 p-3 bg-muted/40 rounded-lg border border-border/50">
                     <div className="p-2 bg-white rounded-md shrink-0">
-                      {f.type === 'pdf' ? <FileText className="w-5 h-5 text-red-500" /> : <FileImage className="w-5 h-5 text-blue-500" />}
+                      {f.type === 'pdf' ? (
+                        <FileText className="w-5 h-5 text-red-500" />
+                      ) : f.type === 'doc' ? (
+                        <FileText className="w-5 h-5 text-blue-600" />
+                      ) : (
+                        <FileImage className="w-5 h-5 text-emerald-500" />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">{f.name}</p>
