@@ -209,11 +209,11 @@ Sistem ini dikembangkan menggunakan metodologi **Agile Scrum** yang berfokus pad
 | **FR-10** | Ruang Kerja Kolaboratif | Memantau pengerjaan proyek via checklist milestone, mengunduh kontrak SPK digital, dan bertukar pesan chat real-time. | High |
 
 ### 4.2 Kebutuhan Non-Fungsional
-| ID | Kategori | Kebutuhan Deskripsi |
-|:---:|:---:|---|
-| **NFR-01** | Performance | Halaman web harus memuat data dalam waktu kurang dari 2 detik pada koneksi internet seluler standar (3G/4G). |
-| **NFR-02** | Security | Hak akses data dikontrol menggunakan policy Row Level Security (RLS) PostgreSQL, dan kredensial database dilindungi dalam `.env` Vercel. |
-| **NFR-03** | Usability | Tata letak antarmuka responsif (Bento Grid) yang beradaptasi secara otomatis pada layar smartphone (min. 360px). |
+| ID | Kategori | Kebutuhan | Deskripsi |
+|:---:|:---:|---|---|
+| **NFR-01** | Performance | Kecepatan Pemuatan Halaman (*Page Load Speed*) | Halaman web harus memuat data dan merender komponen UI dalam waktu kurang dari 2 detik pada koneksi internet seluler standar (3G/4G). |
+| **NFR-02** | Security | Keamanan Data & Kebijakan RLS | Hak akses data dikontrol menggunakan policy Row Level Security (RLS) PostgreSQL, dan kredensial database dilindungi dalam berkas `.env.local` yang tidak diunggah ke publik. |
+| **NFR-03** | Usability | Responsivitas Tampilan (*Mobile-responsive*) | Antarmuka harus menyesuaikan tata letak (Bento Grid) secara otomatis agar optimal saat diakses menggunakan browser seluler (layar smartphone minimal 360px). |
 
 ---
 
