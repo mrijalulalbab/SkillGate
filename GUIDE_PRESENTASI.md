@@ -1,7 +1,7 @@
 # Panduan Presentasi & Demo Program Tugas Besar: SkillGate
 
 Dokumen ini disusun untuk membantu kelompok **Nexus** membagi peran secara adil dan terukur guna memenuhi batasan waktu presentasi:
-*   **Presentasi Dokumen**: 5 Menit (5 Anggota @ 1 Menit)
+*   **Presentasi Dokumen**: 5 Menit (4 Anggota @ 1 Menit 15 Detik)
 *   **Demo Program**: Maksimal 10 Menit (Presenter Terpusat / Bergantian)
 *   **Tanya Jawab (Q&A)**: 15 Menit
 

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Briefcase, Star, Calendar, ExternalLink, Download,
   Share2, Eye, Award, TrendingUp, CheckCircle2, Quote,
-  Palette, Camera, PenTool, BarChart3, Globe
+  Palette, Camera, PenTool, BarChart3, Globe, Sparkles, Copy, Check, Loader2
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -67,6 +67,34 @@ const stats = {
 
 export default function PortfolioPage() {
   const [selectedEntry, setSelectedEntry] = useState<typeof portfolioEntries[0] | null>(null);
+  const [aiSummary, setAiSummary] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [loadingStep, setLoadingStep] = useState("");
+
+  const handleGenerateSummary = () => {
+    setGenerating(true);
+    setLoadingStep("Mengambil data profil akademik...");
+    
+    setTimeout(() => {
+      setLoadingStep("Menganalisis histori proyek & rating dari UMKM...");
+      setTimeout(() => {
+        setLoadingStep("Menghubungkan ke API Gemini untuk menyusun deskripsi...");
+        setTimeout(() => {
+          setAiSummary(
+            "Andi Setiawan adalah mahasiswa Teknik Informatika Universitas Islam Indonesia yang memiliki kompetensi kuat di bidang Desain Grafis, Administrasi Data, dan Fotografi Produk. Melalui platform SkillGate, Andi telah menunjukkan kinerja luar biasa dengan menyelesaikan 3 proyek micro-gig dengan rating rata-rata 4.7/5.0 dan skor kesiapan kerja (readiness score) mencapai 75%, menjadikannya talenta yang sangat mandiri dan siap berkolaborasi secara profesional dengan UMKM."
+          );
+          setGenerating(false);
+        }, 1000);
+      }, 1000);
+    }, 1000);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(aiSummary);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <StudentLayout>
@@ -133,6 +161,69 @@ export default function PortfolioPage() {
             <div className="text-3xl font-bold text-foreground">{stats.totalClients}</div>
             <div className="text-sm font-medium text-muted-foreground mt-1">Klien Dilayani</div>
           </div>
+        </section>
+
+        {/* AI Resume Summary Section */}
+        <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-border/40 relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-24 h-24 bg-primary/5 rounded-full blur-xl" />
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                  Ringkasan Karir AI (AI Resume Summarizer)
+                  <span className="bg-primary/15 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Gemini Powered</span>
+                </h3>
+                <p className="text-sm text-muted-foreground">Merangkum otomatis kompetensi akademik dan rekam jejak kerja Anda untuk draf CV.</p>
+              </div>
+            </div>
+            {!aiSummary && !generating && (
+              <Button 
+                onClick={handleGenerateSummary}
+                className="font-bold flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                Buat Ringkasan AI
+              </Button>
+            )}
+          </div>
+
+          {generating && (
+            <div className="p-6 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              <p className="text-sm font-semibold text-slate-800">{loadingStep}</p>
+              <p className="text-xs text-muted-foreground">Sistem mengompilasi statistik kerja Anda di platform...</p>
+            </div>
+          )}
+
+          {aiSummary && !generating && (
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 relative group/summary">
+              <p className="text-sm text-slate-700 leading-relaxed pr-10">{aiSummary}</p>
+              
+              <div className="absolute top-4 right-4 opacity-100 md:opacity-0 md:group-hover/summary:opacity-100 transition-opacity">
+                <button
+                  onClick={handleCopy}
+                  className="p-2 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 shadow-sm transition-colors text-muted-foreground hover:text-foreground"
+                  title="Salin ke Clipboard"
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+              
+              <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-200 text-xs text-muted-foreground">
+                <span>Siap disalin ke LinkedIn atau CV Anda.</span>
+                <button 
+                  onClick={handleGenerateSummary}
+                  className="text-primary hover:underline font-bold"
+                >
+                  Regenerasi Ringkasan
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Portfolio Grid */}
