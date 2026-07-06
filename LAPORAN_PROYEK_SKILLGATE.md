@@ -360,14 +360,30 @@ erDiagram
 ```
 
 ### 7.3 Logical Data Model
-*   **Daftar Entitas Utama**:
-    1.  `users`: Menyimpan informasi akun login dasar (id, role, full_name, phone, avatar_url).
-    2.  `student_profiles`: Profil akademik mahasiswa (user_id, nim, university, major, skills, readiness_score, projects_completed, rating_avg).
-    3.  `umkm_profiles`: Profil bisnis UMKM (user_id, business_name, category, address, description, rating_avg, projects_posted).
-    4.  `gigs`: Data proyek yang diposting UMKM (id, umkm_id, title, description, budget, deadline, status, progress_percent, accepted_student_id).
-    5.  `applications`: Lamaran mahasiswa (id, gig_id, student_id, cover_letter, timeline_days, bid_amount, status).
-    6.  `messages`: Data riwayat chat (id, gig_id, sender_id, receiver_id, content, created_at).
-    7.  `reviews`: Data rating penyelesaian kerja (id, gig_id, reviewer_id, reviewee_id, rating, comment).
+
+#### 7.3.1 Daftar Entitas Utama
+1.  `users`: Menyimpan informasi akun login dasar (id, role, full_name, phone, avatar_url).
+2.  `student_profiles`: Profil akademik mahasiswa (user_id, nim, university, major, skills, readiness_score, projects_completed, rating_avg).
+3.  `umkm_profiles`: Profil bisnis UMKM (user_id, business_name, category, address, description, rating_avg, projects_posted).
+4.  `gigs`: Data proyek yang diposting UMKM (id, umkm_id, title, description, budget, deadline, status, progress_percent, accepted_student_id).
+5.  `applications`: Lamaran mahasiswa (id, gig_id, student_id, cover_letter, timeline_days, bid_amount, status).
+6.  `messages`: Data riwayat chat (id, gig_id, sender_id, receiver_id, content, created_at).
+7.  `reviews`: Data rating penyelesaian kerja (id, gig_id, reviewer_id, reviewee_id, rating, comment).
+
+#### 7.3.2 Relationship Database Relasional
+Sistem informasi SkillGate didukung oleh basis data relasional PostgreSQL dengan integritas referensial yang ketat untuk memastikan konsistensi seluruh alur transaksi micro-gig:
+*   **One-to-One (1:1) Users ke Student/UMKM Profile**: 
+    - Setiap akun dasar di tabel `users` memiliki tepat satu profil spesifik di `student_profiles` (jika mahasiswa) atau `umkm_profiles` (jika UMKM). Relasi ini diikat melalui foreign key `user_id` yang bersifat `UNIQUE` dan mereferensikan `users.id` dengan aturan `ON DELETE CASCADE`.
+*   **One-to-Many (1:N) UMKM ke Gigs**:
+    - Satu pelaku UMKM (`users.id`) dapat memposting banyak proyek mikro (`gigs.umkm_id`). Apabila akun UMKM dihapus, seluruh proyek terkait akan dihapus otomatis (`ON DELETE CASCADE`).
+*   **One-to-Many (1:N) Gigs ke Applications**:
+    - Setiap proyek mikro (`gigs.id`) dapat menerima banyak proposal lamaran dari mahasiswa (`applications.gig_id`). Sistem menerapkan constraint `UNIQUE(gig_id, student_id)` untuk memastikan satu mahasiswa hanya dapat mengirimkan satu lamaran per proyek.
+*   **Many-to-One (N:1) Gigs ke Mahasiswa Terpilih**:
+    - Kolom `gigs.accepted_student_id` menghubungkan proyek dengan mahasiswa pelaksana. Kolom ini mereferensikan `users.id` dengan aturan `ON DELETE SET NULL` guna mempertahankan data proyek meskipun akun pelaksana terhapus.
+*   **One-to-Many (1:N) Gigs ke Messages (Chat)**:
+    - Setiap pesan komunikasi real-time terikat pada proyek tertentu via `messages.gig_id` yang mereferensikan `gigs.id` untuk memisahkan ruang obrolan antar proyek secara aman.
+*   **One-to-One / One-to-Many (1:N) Gigs ke Reviews**:
+    - Ulasan hasil kerja terikat pada proyek via `reviews.gig_id`. Constraint `UNIQUE(gig_id, reviewer_id)` diterapkan agar ulasan hanya dapat diberikan sekali per pihak yang terlibat.
 
 ### 7.4 Physical Data Model (Struktur Tabel DDL)
 Skema fisik diimplementasikan menggunakan perintah DDL SQL sebagai berikut:
@@ -515,52 +531,102 @@ Melakukan simulasi langsung pendaftaran akun baru, pengerjaan kuis kesiapan kerj
 #### 10.2.3 Pengujian Fungsional
 Memastikan policy RLS (Row Level Security) Supabase bekerja secara tepat. Klien UMKM hanya dapat memperbarui proyek miliknya, dan mahasiswa yang diterima hanya dapat memperbarui progres proyek yang ia kerjakan.
 
----
-
 ## 11. DOKUMENTASI FITUR DAN AKSES SISTEM
 
 ### 11.1 Daftar Fitur yang Dikembangkan
-1.  **Dashboard Bento Mahasiswa (`/dashboard/student`)**:
-    - *Deskripsi*: Menampilkan skor kesiapan, jam kerja, proyek berjalan, dan grafik keuangan.
-2.  **Dashboard Bento UMKM (`/dashboard/umkm`)**:
-    - *Deskripsi*: Menampilkan statistik ringkasan proyek aktif, proposal masuk, dan estimasi biaya.
-3.  **Halaman Asesmen Kesiapan Kerja (`/register/mahasiswa` step kuis)**:
-    - *Deskripsi*: Kuis interaktif 5 pertanyaan dengan kalkulator skor dinamis.
-4.  **Halaman Pengaju Proposal (`/gigs/[id]/proposal`)**:
-    - *Deskripsi*: Formulir pengiriman cover letter, bid harga, checklist highlight proyek histori, dan uploader file (PDF/DOC/DOCX/Gambar).
+
+#### 11.1.1 Modul Asesmen Mandiri & Kuis Kesiapan Kerja Mahasiswa
+*   **Deskripsi**: Kuis interaktif berbasis 5 studi kasus etika kerja dan komunikasi profesional untuk mengukur kelayakan mahasiswa sebelum melamar proyek.
+*   **Fungsionalitas**: Menyajikan pertanyaan pilihan ganda secara dinamis, mengevaluasi jawaban, mengkalkulasi skor kesiapan kerja (0-100%), serta meng-update kolom `readiness_score` pada `student_profiles` di database.
+*   **Pengguna**: Mahasiswa
+*   **Cara Penggunaan**:
+    1. Login sebagai Mahasiswa.
+    2. Buka halaman pengaturan akademik (`/student/settings`).
+    3. Pilih tab Akademik dan klik tombol **"Mulai Kuis Kesiapan Kerja"**.
+    4. Selesaikan semua 5 pertanyaan kuis dan kirim jawaban.
+*   **Screenshot**:  
+    ![Asesmen Kesiapan Kerja](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/settings_academic_tab_screenshot_1781911284525.png)
+
+#### 11.1.2 Papan Lowongan Kerja (Gigs Board) & Sistem Proposal
+*   **Deskripsi**: Ruang penelusuran lowongan proyek mikro digital yang diposting oleh UMKM Sleman untuk mahasiswa pelamar kerja.
+*   **Fungsionalitas**: Pencarian teks, filter berdasarkan kategori pekerjaan (Desain Grafis, Administrasi, Fotografi, Media Sosial), kalkulasi kecocokan skor rekomendasi pelamar, pengiriman proposal (cover letter, bid dana, durasi kerja), dan file uploader lampiran portofolio.
+*   **Pengguna**: Mahasiswa (pencari proyek) dan UMKM (pemberi proyek)
+*   **Cara Penggunaan**:
+    1. Akses halaman `/gigs`.
+    2. Cari proyek atau gunakan filter kategori.
+    3. Klik proyek untuk melihat detail persyaratan dan kecocokan skor.
+    4. Klik tombol **"Kirim Proposal"**, isi data nominal bid beserta berkas lampiran, kemudian submit.
+*   **Screenshot**:  
+    ![Gigs Board](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/gigs_board_1782048070772.png)
+
+#### 11.1.3 Ruang Kerja Kolaborasi & Kontrak SPK Otomatis
+*   **Deskripsi**: Halaman workspace interaktif tempat mahasiswa pelaksana dan UMKM pemberi kerja berkolaborasi menyelesaikan proyek pasca-persetujuan proposal lamaran.
+*   **Fungsionalitas**: Menghasilkan dokumen digital Surat Perjanjian Kerja (SPK) secara otomatis dengan parameter dana escrow terjamin, chat obrolan terintegrasi secara real-time, checklist milestone progres kerja, serta sistem konfirmasi penyerahan hasil output kerja.
+*   **Pengguna**: Mahasiswa dan UMKM yang sedang dalam masa kontrak kerja aktif
+*   **Cara Penggunaan**:
+    1. UMKM menyetujui proposal mahasiswa dan melakukan simulasi deposit dana escrow.
+    2. Mahasiswa membuka halaman detail proyek di `/student/proyek/[id]`.
+    3. Klik **"Lihat Dokumen Kontrak SPK"** untuk membaca hak dan kewajiban.
+    4. Berkoordinasi lewat chat di tab obrolan, memperbarui checklist milestone pengerjaan, dan menyerahkan hasil kerja akhir.
+*   **Screenshot**:  
+    ![Workspace Proyek](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/proposal_form_1782048078333.png)
 
 ### 11.2 Fitur LLM yang Diimplementasikan
-*   **AI Resume Executive Summary Generator**: Terletak pada tab Portofolio Mahasiswa (`/student/portfolio`). Sistem mengumpulkan data histori proyek selesai yang berating tinggi, menyusunnya dalam objek teks, mengirimkannya ke model AI, dan merender hasilnya dalam bentuk kartu ringkasan eksekutif portofolio yang dapat diekspor.
+
+#### 11.2.1 AI Resume Summary Generator
+*   **Deskripsi**: Fitur asisten cerdas berbasis AI generatif yang merangkum kompetensi akademik mahasiswa dan histori reputasi proyek yang diselesaikannya di platform SkillGate ke dalam paragraf profil profesional siap pakai.
+*   **Input**: Nama mahasiswa, program studi, universitas, daftar keahlian (*skills*), skor kesiapan kerja (*readiness score*), jumlah total proyek selesai, dan rata-rata rating ulasan klien UMKM.
+*   **Processing**: Frontend mengumpulkan parameter metadata di atas, mengirimkannya via API endpoint backend `/api/generate-summary` ke API Google Gemini. LLM memproses data melalui instruksi *System Prompt* terstruktur agar menghasilkan ringkasan profesional eksekutif bahasa Indonesia sepanjang 3 kalimat padat.
+*   **Output**: Paragraf ringkasan eksekutif profil profesional yang siap disalin oleh mahasiswa ke profil LinkedIn, CV fisik, atau berkas portofolio eksternal mereka.
+*   **Demo**:  
+    ![AI Resume Generator Demo](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/portfolio_modal_opened_1781911256622.png)
 
 ### 11.3 Akses Sistem
-*   **URL Aplikasi (Deployment)**: *https://skillgate-web.vercel.app (Simulasi lokal dev)*
-*   **Repository Code**: https://github.com/mrijalulalbab/SkillGate.git
-*   **API Documentation**: Terintegrasi langsung dengan dokumentasi otomatis API Supabase Dashboard.
-*   **Kredensial Akun Testing**:
-    - *Mahasiswa*: Username: `andi@student.uii.ac.id` | Password: `password123`
-    - *UMKM*: Username: `darmi@batiksleman.com` | Password: `password123`
-    - *Admin*: Username: `admin@skillgate.com` | Password: `password123`
 
-#### 11.3.1 Panduan Akses
-1.  Buka browser dan akses aplikasi web.
-2.  Gunakan kredensial akun mahasiswa untuk login, lalu buka halaman `/gigs` untuk mencari lowongan.
-3.  Kirim lamaran proposal lengkap dengan melampirkan berkas PDF/DOCX portofolio Anda.
-4.  Keluar (`logout`), lalu masuk (`login`) menggunakan akun UMKM untuk meninjau lamaran mahasiswa tersebut dan memantau status proyek di dashboard UMKM.
+#### 11.3.1 URL dan Repository
+*   **URL Lokal Development**: `http://localhost:3000` (dijalankan menggunakan `npm run dev`)
+*   **Repository Code**: https://github.com/mrijalulalbab/SkillGate.git
+*   **API Database**: Supabase Client SDK
+
+#### 11.3.2 Kredensial Testing
+
+| Role | Username | Password | Akses |
+|---|---|---|---|
+| **Admin** | `admin@skillgate.com` | `password123` | Akses penuh dashboard administrasi, statistik keuangan, verifikasi UMKM, dan moderasi gigs. |
+| **Mahasiswa (Andi)** | `andi@student.uii.ac.id` | `password123` | Akses penuh pencarian gig, pengiriman proposal, pengisian kuis, pengerjaan proyek aktif, dan ekspor portofolio AI. |
+| **Mahasiswa (Anto)** | `anto@student.uii.ac.id` | `password123` | Akun mahasiswa pengujian bersih dengan histori data portofolio terverifikasi. |
+| **UMKM (Darmi)** | `darmi@batiksleman.com` | `password123` | Akses posting proyek, pratinjau langsung, peninjauan pelamar terbaik, deposit dana aman, chat, dan review mahasiswa. |
+
+#### 11.3.3 Panduan Akses
+1.  **Untuk Admin**:
+    *   Buka browser dan buka menu login di `/login`.
+    *   Masukkan username `admin@skillgate.com` dan password `password123`.
+    *   Sistem akan mengarahkan ke `/dashboard/admin` di mana Admin dapat mengelola moderasi status verifikasi pendaftaran akun UMKM baru serta memantau kesehatan seluruh ekosistem transaksi.
+2.  **Untuk User**:
+    *   Registrasi akun baru melalui halaman `/register/mahasiswa` atau `/register/umkm`, atau login menggunakan kredensial testing di atas di halaman `/login`.
+    *   Setelah login berhasil, sistem akan mengarahkan ke dashboard bento personal masing-masing role (`/dashboard/student` atau `/dashboard/umkm`).
+    *   Buka menu relevan pada navbar (Pencarian Gigs `/gigs`, Manajemen Proyek, Portofolio AI, maupun halaman chat untuk menguji fungsionalitas sistem informasi).
 
 ---
 
 ## 12. KESIMPULAN DAN SARAN
 
 ### 12.1 Kesimpulan
-Platform SkillGate berhasil dikembangkan sebagai prototipe sistem informasi ekosistem gig terpercaya yang andal bagi mahasiswa dan UMKM di wilayah Sleman. Fitur-fitur utama seperti modul asesmen kuis kesiapan kerja, papan lowongan, kecocokan rekomendasi pelamar, pembuatan kontrak SPK otomatis, serta notifikasi toast berhasil diintegrasikan dengan lancar ke database relasional Supabase. Evaluasi build final menunjukkan sistem bekerja secara stabil, cepat, dan responsif.
+*   **Pencapaian Tujuan**: Proyek pengembangan sistem informasi SkillGate berhasil mencapai tujuannya dengan menyediakan ekosistem terpercaya yang menjembatani kolaborasi digital produktif antara mahasiswa dan UMKM Sleman secara aman dan terverifikasi.
+*   **Fitur yang Berhasil Diimplementasikan**: Modul registrasi multi-peran, sistem kuis asesmen mandiri, kalkulator bobot kecocokan pelamar cerdas, pratinjau langsung postingan proyek UMKM, ruang kerja kolaborasi, notifikasi toast, dokumen kontrak kerja SPK dinamis otomatis, dan riwayat chat real-time.
+*   **Integrasi LLM**: AI Resume Executive Summary berhasil diintegrasikan menggunakan API Google Gemini untuk menghasilkan ringkasan profil profesional berbasis performa riil mahasiswa di platform.
+*   **Manfaat yang Dihasilkan**: Mahasiswa mendapatkan kesempatan kerja riil secara fleksibel untuk membangun reputasi portfolio berbayar, sementara UMKM lokal dapat mempercepat transformasi digital operasional mereka dengan anggaran yang terjangkau tanpa risiko penipuan.
 
 ### 12.2 Keterbatasan
-*   Sistem verifikasi berkas UMKM (KTP/NIB) masih dikelola secara semi-manual oleh admin melalui dashboard moderasi dan belum terhubung ke API sistem perizinan pemerintah daerah secara terotomatisasi penuh.
-*   Fungsi transfer dana honorarium proyek masih berupa sistem simulasi escrow internal dan belum menggunakan gerbang pembayaran perbankan riil.
+*   **Keterbatasan Teknis**: Verifikasi berkas legalitas UMKM (NIB/KTP) belum terintegrasi secara otomatis dengan database API instansi pemerintah daerah Sleman, sehingga masih memerlukan verifikasi semi-manual di sisi dashboard admin.
+*   **Keterbatasan Fitur**: Sistem transfer pembayaran honorarium masih berupa simulasi rekening escrow internal dan belum terintegrasi secara komersial dengan gerbang pembayaran (payment gateway) perbankan riil.
+*   **Keterbatasan Waktu**: Alokasi waktu pengerjaan proyek tugas besar yang terbatas membatasi pengujian performa beban tinggi (stress testing) pada fitur obrolan chat sinkron saat diakses ribuan pengguna bersamaan.
 
 ### 12.3 Saran Pengembangan
-*   Mengintegrasikan payment gateway resmi (seperti Midtrans atau Xendit) untuk memproses pembayaran deposit dana proyek UMKM secara otomatis.
-*   Menambahkan fitur chat bot asisten AI untuk memandu pelaku UMKM mikro yang kesulitan merumuskan brief deskripsi proyek mereka.
+*   **Fitur Tambahan**: Penambahan fitur bot asisten AI pembuat deskripsi brief kebutuhan proyek secara terpandu untuk membantu pelaku UMKM pemula.
+*   **Peningkatan Performa**: Implementasi database caching menggunakan Redis untuk mengoptimalkan pemuatan daftar lowongan kerja (*gigs*) ber-traffic tinggi.
+*   **Perbaikan UX/UI**: Peningkatan desain navigasi interaktif pada visualisasi jalur belajar MOOC mahasiswa agar lebih ramah pengguna.
+*   **Integrasi Lanjutan**: Integrasi layanan payment gateway resmi (seperti Midtrans or Xendit) untuk memfasilitasi transaksi escrow antar-rekening bank lokal secara riil.
 
 ---
 
