@@ -110,6 +110,10 @@ export default function UMKMRegistrationPage() {
     } else {
       setLoading(true);
       try {
+        // 1. Sign out any existing session to prevent session mismatch/conflicts
+        await supabase.auth.signOut();
+
+        // 2. Sign up the new user
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -128,6 +132,18 @@ export default function UMKMRegistrationPage() {
 
         if (error) {
           throw new Error(error.message);
+        }
+
+        // 3. Attempt direct login to guarantee the session is properly active and correct
+        if (data.user) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: formData.email,
+            password: formData.password
+          });
+          if (signInError) {
+            router.push("/login?message=Pendaftaran berhasil! Silakan masuk menggunakan akun baru Anda.");
+            return;
+          }
         }
 
         router.push("/dashboard/umkm");

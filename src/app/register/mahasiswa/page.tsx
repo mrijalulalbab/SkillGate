@@ -116,6 +116,10 @@ export default function RegisterMahasiswaPage() {
     setLoading(true);
     setErrorMsg("");
     try {
+      // 1. Sign out any existing session to prevent session mismatch/conflicts
+      await supabase.auth.signOut();
+
+      // 2. Sign up the new user
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -137,6 +141,19 @@ export default function RegisterMahasiswaPage() {
 
       if (error) {
         throw new Error(error.message);
+      }
+
+      // 3. Attempt direct login to guarantee the session is properly active and correct
+      if (data.user) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password
+        });
+        if (signInError) {
+          // If auto-login fails (e.g. email confirmation required on cloud), redirect to login page with notice
+          router.push("/login?message=Pendaftaran berhasil! Silakan masuk menggunakan akun baru Anda.");
+          return;
+        }
       }
 
       router.push(targetPath);

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -16,11 +16,23 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [infoMsg, setInfoMsg] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get("message");
+      if (msg) {
+        setInfoMsg(msg);
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
+    setInfoMsg("");
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -82,6 +94,12 @@ export default function LoginPage() {
               <h1 className="text-2xl font-bold text-foreground mb-1">Masuk ke SkillGate</h1>
               <p className="text-sm text-muted-foreground">Masukkan email dan kata sandi Anda</p>
             </div>
+
+            {infoMsg && (
+              <div className="mb-6 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-sm text-center font-medium">
+                {infoMsg}
+              </div>
+            )}
 
             {errorMsg && (
               <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm text-center font-medium">
