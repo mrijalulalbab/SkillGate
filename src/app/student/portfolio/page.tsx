@@ -136,61 +136,13 @@ export default function PortfolioPage() {
             totalClients: clientsSet.size,
           });
         } else {
-          // Fallback dynamic entries with the logged in user's name
-          const fallbackEntries = [
-            {
-              id: 1,
-              title: "Desain Poster Promosi Lebaran",
-              client: "UMKM Batik Bu Darmi",
-              clientAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuC1xJkiSjkhsR7Lvz7cxZtY5aMCaT5fYwI3Wl0EsDez7_UFZFXqofnMfWC2UjhmoaubyZnvXO5D3t8-lJJX1FGKtlcjWM0WNvZMYGJvx4EsPGVzmdf6NjvhlWqY1UQADJ4k-OtvnRsP4WxE37ZpeAbdmLa0AaZFGMkRIGco38B6mCu9zD7-wJYxZSY66RotmrZRtCeT90rfxgsAdDYQnZYg3gMm6qD08-HqFiX1ou-F5YvvHnhQDGqTlIwb-Jvwx61gRjmb8cVPS9Y",
-              category: "Desain Grafis",
-              categoryIcon: Palette,
-              completedDate: "15 Jun 2026",
-              budget: "Rp 150.000",
-              rating: 5,
-              testimonial: `${nameToShow} sangat profesional dan responsif. Desain posternya luar biasa bagus, melebihi ekspektasi saya. Pasti akan kerjasama lagi!`,
-              thumbnail: "https://lh3.googleusercontent.com/aida-public/AB6AXuAfjWCwVg7ZwxiQ5U7NGSB7tkQHTqB_pEeGszjp0OK1UEnJFpxMPxk5P42KLCbwdQvnS1iJ1h7UZEDP7XTsHwm1KBt5cZ9JrTE5VtiWenS94sjNeRw1sAlrk2Uy2Ofwrsyumsmi3zBXBNS4mb4S8pHOwKDRiNzLL_w8cEGPJwvifcmDJiyZmummvy-nrCSKQf_6kAYqaN6Nv5wOruHKzDlWmz_B4OIMfR3gsdKNKjnpk7EqwnJbyWpM4aFPBJnGkv8fjVOgPKnu1rc",
-              skills: ["Canva", "Adobe Photoshop", "Copywriting"],
-              deliverables: ["5 desain poster (1080×1080)", "1 cover highlight IG"],
-            },
-            {
-              id: 2,
-              title: "Input Data Penjualan Toko Online",
-              client: "Toko Kopi Jogja Brew",
-              clientAvatar: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&q=80&w=150",
-              category: "Administrasi",
-              categoryIcon: BarChart3,
-              completedDate: "10 Jun 2026",
-              budget: "Rp 100.000",
-              rating: 4,
-              testimonial: `Pekerjaannya rapi dan tepat waktu. Sangat membantu dalam merapikan data penjualan kami selama 3 bulan terakhir. Sangat merekomendasikan ${nameToShow}!`,
-              thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
-              skills: ["Microsoft Excel", "Google Sheets", "Data Entry"],
-              deliverables: ["Spreadsheet penjualan 3 bulan", "Laporan ringkasan"],
-            },
-            {
-              id: 3,
-              title: "Foto Produk Kerajinan Tangan",
-              client: "Kerajinan Bambu Pak Suryo",
-              clientAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
-              category: "Fotografi",
-              categoryIcon: Camera,
-              completedDate: "2 Jun 2026",
-              budget: "Rp 200.000",
-              rating: 5,
-              testimonial: `Foto produknya sangat profesional! Setelah pakai foto dari ${nameToShow}, penjualan online kami naik 30%. Terima kasih banyak!`,
-              thumbnail: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
-              skills: ["Fotografi Produk", "Lightroom", "Editing Foto"],
-              deliverables: ["20 foto produk HD", "5 foto lifestyle"],
-            },
-          ];
-
-          setPortfolioEntries(fallbackEntries);
+          // No completed gigs — show empty portfolio
+          setPortfolioEntries([]);
           setStats({
-            totalProjects: 3,
-            totalEarnings: "Rp 450.000",
-            avgRating: 4.7,
-            totalClients: 3,
+            totalProjects: 0,
+            totalEarnings: "Rp 0",
+            avgRating: 0,
+            totalClients: 0,
           });
         }
       } catch (err) {
@@ -212,7 +164,9 @@ export default function PortfolioPage() {
         setLoadingStep("Menghubungkan ke API Gemini untuk menyusun deskripsi...");
         setTimeout(() => {
           setAiSummary(
-            `${studentName} adalah mahasiswa ${major} ${university} yang memiliki kompetensi kuat di bidang ${skills.length > 0 ? skills.slice(0, 3).join(', ') : 'Desain Grafis dan Administrasi Data'}. Melalui platform SkillGate, ${studentName} telah menunjukkan kinerja luar biasa dengan menyelesaikan 3 proyek micro-gig dengan rating rata-rata 4.7/5.0 dan skor kesiapan kerja (readiness score) mencapai ${readinessScore}%, menjadikannya talenta yang sangat mandiri dan siap berkolaborasi secara profesional dengan UMKM.`
+            stats.totalProjects > 0
+              ? `${studentName} adalah mahasiswa ${major} ${university} yang memiliki kompetensi kuat di bidang ${skills.length > 0 ? skills.slice(0, 3).join(', ') : 'Desain Grafis dan Administrasi Data'}. Melalui platform SkillGate, ${studentName} telah menunjukkan kinerja luar biasa dengan menyelesaikan ${stats.totalProjects} proyek micro-gig dengan rating rata-rata ${stats.avgRating}/5.0 dan skor kesiapan kerja (readiness score) mencapai ${readinessScore}%, menjadikannya talenta yang sangat mandiri dan siap berkolaborasi secara profesional dengan UMKM.`
+              : `${studentName} adalah mahasiswa ${major} ${university} yang memiliki kompetensi di bidang ${skills.length > 0 ? skills.slice(0, 3).join(', ') : 'berbagai keahlian'}. ${studentName} saat ini sedang membangun portofolio profesional melalui platform SkillGate dengan skor kesiapan kerja (readiness score) mencapai ${readinessScore}%. Siap untuk mengambil proyek pertama dan membuktikan kemampuannya secara nyata kepada UMKM.`
           );
           setGenerating(false);
         }, 1000);
@@ -365,86 +319,104 @@ export default function PortfolioPage() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {portfolioEntries.map((entry) => {
-              const CategoryIcon = entry.categoryIcon;
-              return (
-                <div
-                  key={entry.id}
-                  className="bg-white rounded-2xl shadow-sm border border-border/40 overflow-hidden group hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col"
-                  onClick={() => setSelectedEntry(entry)}
-                >
-                  {/* Thumbnail */}
-                  <div className="relative h-48 md:h-56 overflow-hidden">
-                    <img
-                      src={entry.thumbnail}
-                      alt={entry.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    
-                    {/* Category badge */}
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <CategoryIcon className="w-3.5 h-3.5 text-primary" />
-                      {entry.category}
-                    </div>
-                    
-                    {/* View overlay */}
-                    <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors flex items-center justify-center">
-                      <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
-                        <Eye className="w-5 h-5 text-primary" />
+          {portfolioEntries.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {portfolioEntries.map((entry) => {
+                const CategoryIcon = entry.categoryIcon;
+                return (
+                  <div
+                    key={entry.id}
+                    className="bg-white rounded-2xl shadow-sm border border-border/40 overflow-hidden group hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col"
+                    onClick={() => setSelectedEntry(entry)}
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative h-48 md:h-56 overflow-hidden">
+                      <img
+                        src={entry.thumbnail}
+                        alt={entry.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      
+                      {/* Category badge */}
+                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <CategoryIcon className="w-3.5 h-3.5 text-primary" />
+                        {entry.category}
+                      </div>
+                      
+                      {/* View overlay */}
+                      <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors flex items-center justify-center">
+                        <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                          <Eye className="w-5 h-5 text-primary" />
+                        </div>
+                      </div>
+                      
+                      {/* Rating on thumbnail */}
+                      <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5 text-amber-500 fill-current" />
+                        <span className="text-xs font-bold text-foreground">{entry.rating}.0</span>
                       </div>
                     </div>
                     
-                    {/* Rating on thumbnail */}
-                    <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 text-amber-500 fill-current" />
-                      <span className="text-xs font-bold text-foreground">{entry.rating}.0</span>
-                    </div>
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="p-5 md:p-6 flex flex-col flex-grow">
-                    <h3 className="text-lg font-bold text-foreground mb-2 leading-snug group-hover:text-primary transition-colors">
-                      {entry.title}
-                    </h3>
-                    
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 border border-border/50">
-                        <img src={entry.clientAvatar} alt={entry.client} className="w-full h-full object-cover" />
+                    {/* Content */}
+                    <div className="p-5 md:p-6 flex flex-col flex-1">
+                      <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                        {entry.title}
+                      </h3>
+                      
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 border border-border/50">
+                          <img src={entry.clientAvatar} alt={entry.client} className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-sm text-muted-foreground font-medium">{entry.client}</span>
                       </div>
-                      <span className="text-sm text-muted-foreground font-medium">{entry.client}</span>
-                    </div>
 
-                    {/* Skills used */}
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {entry.skills.slice(0, 3).map((skill: string) => (
-                        <span key={skill} className="px-2 py-0.5 bg-primary/5 text-primary text-xs font-semibold rounded-md">
-                          {skill}
+                      {/* Skills used */}
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {entry.skills.slice(0, 3).map((skill: string) => (
+                          <span key={skill} className="px-2 py-0.5 bg-primary/5 text-primary text-xs font-semibold rounded-md">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      {/* Testimonial preview */}
+                      <div className="bg-muted/30 rounded-lg p-3 mt-auto">
+                        <div className="flex items-start gap-2">
+                          <Quote className="w-4 h-4 text-primary/40 shrink-0 mt-0.5" />
+                          <p className="text-xs text-muted-foreground italic line-clamp-2">{entry.testimonial}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Footer */}
+                      <div className="flex justify-between items-center mt-4 pt-4 border-t border-border/30 text-xs font-semibold text-muted-foreground">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" /> {entry.completedDate}
                         </span>
-                      ))}
-                    </div>
-                    
-                    {/* Testimonial preview */}
-                    <div className="bg-muted/30 rounded-lg p-3 mt-auto">
-                      <div className="flex items-start gap-2">
-                        <Quote className="w-4 h-4 text-primary/40 shrink-0 mt-0.5" />
-                        <p className="text-xs text-muted-foreground italic line-clamp-2">{entry.testimonial}</p>
+                        <span className="text-primary font-bold">{entry.budget}</span>
                       </div>
                     </div>
-                    
-                    {/* Footer */}
-                    <div className="flex justify-between items-center mt-4 pt-4 border-t border-border/30 text-xs font-semibold text-muted-foreground">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" /> {entry.completedDate}
-                      </span>
-                      <span className="text-primary font-bold">{entry.budget}</span>
-                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-dashed border-border p-12 md:p-16 text-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Briefcase className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground mb-2">Belum Ada Karya</h3>
+              <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                Portofolio Anda akan terisi otomatis setelah Anda menyelesaikan proyek pertama dari UMKM di SkillGate.
+              </p>
+              <Link href="/gigs">
+                <Button className="font-bold">
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  Jelajahi Proyek Tersedia
+                </Button>
+              </Link>
+            </div>
+          )}
         </section>
 
         {/* Detail Modal */}
