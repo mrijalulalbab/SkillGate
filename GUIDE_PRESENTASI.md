@@ -11,46 +11,44 @@ Dokumen ini disusun untuk membantu kelompok **Nexus** membagi peran secara adil 
 
 | Durasi | Pembicara | Bagian Dokumen | Topik Utama |
 | :---: | :--- | :--- | :--- |
-| **00:00 - 01:00** | **Albab (Project Lead)** | Bab 1 & 2 | Pembuka, Latar Belakang (Masalah UII-Sleman), & Project Charter |
-| **01:00 - 02:00** | **Yusuf (Research Lead)** | Bab 3 & 4 | Analisis Stakeholder & Kebutuhan Fungsional/Non-Fungsional |
-| **02:00 - 03:00** | **Jawara (Content Lead)** | Bab 5 & 6 | Desain Proses Bisnis (BPMN), Use Case, & Skenario |
-| **03:00 - 04:00** | **Naila (Prototyper)** | Bab 7 & 9 | Arsitektur Sistem (Serverless 3-Tier) & Skema Database (ERD) |
-| **04:00 - 05:00** | **Rifqi (UI/UX Designer)** | Bab 8 & 12 | Integrasi LLM (Resume Summary) & Kesimpulan Proyek |
+| **00:00 - 01:15** | **Albab (Project Lead)** | Bab 1 & 2 | Pembuka, Latar Belakang Masalah, Tujuan Proyek, & Project Charter (Risiko Escrow) |
+| **01:15 - 02:30** | **Yusuf (Research Lead)** | Bab 3 & 4 | Analisis Stakeholder & Kebutuhan Fungsional/Non-Fungsional (Tabel FR & NFR) |
+| **02:30 - 03:45** | **Naila (Prototyper)** | Bab 5, 6, 7 & 9 | Proses Bisnis (BPMN), Use Case, Arsitektur Sistem 3-Tier, & Database ERD |
+| **03:45 - 05:00** | **Rifqi (UI/UX Designer)** | Bab 8, 10 & 12 | Integrasi AI/LLM (Resume Generator), Pengujian UAT, & Kesimpulan/Saran |
 
 ---
 
-## 2. NASKAH BICARA ANGGOTA KELOMPOK (DRAFT 1 MENIT / ORANG)
+## 2. NASKAH BICARA ANGGOTA KELOMPOK (DRAFT 1 MENIT 15 DETIK / ORANG)
 
-### Pembicara 1: Albab (Project Lead) - Pembuka & Latar Belakang
-> *"Selamat pagi bapak/ibu dosen penguji. Kami dari kelompok Nexus akan mempresentasikan **SkillGate**, sebuah platform ekosistem digital kampus-ke-freelance.*
+### Pembicara 1: Albab (Project Lead) - Pembuka, Pendahuluan & Project Charter
+> *"Selamat pagi Bapak dan Ibu dosen penguji. Kami dari kelompok Nexus akan mempresentasikan **SkillGate**, platform ekosistem digital kampus-ke-freelance bagi mahasiswa dan UMKM lokal.
 >
-> *Latar belakang proyek ini adalah tingginya angka mahasiswa di Sleman (lebih dari 256 ribu) yang butuh portofolio kerja nyata, berbanding lurus dengan 110 ribu UMKM Sleman yang butuh jasa digital terjangkau namun memiliki keterbatasan anggaran. SkillGate menjembatani ini dengan konsep proyek mikro (micro-gigs) yang aman.*
+> Masalah utama yang kami angkat adalah kesenjangan struktural di Sleman: terdapat lebih dari 256 ribu mahasiswa aktif yang butuh portofolio kerja nyata, berdampingan dengan 110 ribu UMKM yang butuh jasa digital terjangkau namun tidak mampu menyewa agensi profesional.
 >
-> *Berdasarkan Project Charter kami, proyek ini berlangsung selama 2 bulan dengan fokus membangun transparansi kerja dan meminimalisir penipuan transaksi melalui sistem penahanan dana (escrow) terpercaya."*
+> Proyek SkillGate dirancang untuk menyelesaikan masalah tersebut dengan menyediakan platform transaksi micro-gig yang aman. Melalui Project Charter yang kami susun, kami berasumsi mahasiswa UII memiliki keterampilan dasar yang mumpuni, dengan risiko utama berupa keamanan dana yang kami mitigasi melalui sistem pembayaran deposit escrow terintegrasi."*
 
-### Pembicara 2: Yusuf (Research Lead) - Stakeholder & Kebutuhan
-> *"Saya Yusuf. Dari riset stakeholder yang kami lakukan, pengguna primer sistem ini adalah **Mahasiswa** yang membutuhkan portofolio terverifikasi, dan **Pemilik UMKM** yang membutuhkan efisiensi biaya.*
+### Pembicara 2: Yusuf (Research Lead) - Stakeholder & Kebutuhan Sistem
+> *"Saya Yusuf. Dari hasil analisis stakeholder, kami memetakan dua pengguna primer utama: **Mahasiswa** yang membutuhkan portofolio terverifikasi, serta **UMKM** yang membutuhkan jasa digital berkualitas yang murah.
 >
-> *Untuk memenuhinya, kami merumuskan kebutuhan fungsional utama: Sistem harus menyediakan formulir registrasi multi-step bagi mahasiswa yang terintegrasi langsung dengan Kuis Kesiapan Kerja. Bagi UMKM, sistem wajib menyediakan modul posting proyek dengan live preview untuk meminimalisir kesalahan input.*
+> Untuk memenuhi kebutuhan tersebut, kami merumuskan kebutuhan fungsional (FR) berprioritas High, seperti modul registrasi mahasiswa yang terintegrasi langsung dengan Kuis Kesiapan Kerja (FR-01 & FR-02), serta modul posting proyek UMKM dengan fitur live preview (FR-08) dan analisis smart recommendation pelamar (FR-09).
 >
-> *Secara non-fungsional, keamanan data dikontrol ketat melalui Row Level Security (RLS) database Supabase."*
+> Secara non-fungsional, sistem wajib memenuhi aspek performa (load time kurang dari 2 detik), keamanan ketat (database PostgreSQL RLS), serta usabilitas responsif (layout bento grid) untuk smartphone."*
 
-### Pembicara 3: Jawara (Content Lead) - Proses Bisnis & Use Case
-> *"Saya Jawara. Untuk proses bisnis, kami merancang alur kolaborasi dua arah. Berdasarkan diagram BPMN kami, alur dimulai dari posting proyek UMKM, pengajuan proposal mahasiswa, deposit escrow, tanda tangan kontrak SPK digital otomatis, hingga penyerahan hasil berkas kerja.*
+### Pembicara 3: Naila (Prototyper) - Desain Proses Bisnis, Use Case, Arsitektur & Database
+> *"Saya Naila. Kami merancang proses bisnis yang kolaboratif menggunakan BPMN, di mana alur pengerjaan terdokumentasi rapi mulai dari rekrutmen hingga penyelesaian proyek. Hak akses dari seluruh fungsi ini dikontrol secara terpusat melalui Use Case Diagram yang memetakan wewenang Mahasiswa, UMKM, dan Admin.
 >
-> *Semua interaksi ini dipetakan ke dalam Use Case Diagram yang membagi wewenang secara jelas antara Mahasiswa, UMKM, dan Admin. Salah satu skenario krusial adalah seleksi pelamar, di mana UMKM didukung oleh modul rekomendasi kecocokan kandidat secara real-time."*
+> Untuk arsitektur, kami mengimplementasikan Serverless React 3-Tier menggunakan Next.js 16 (App Router) di sisi frontend dan database relasional PostgreSQL (Supabase) di sisi backend. 
+>
+> Skema database ERD kami terdiri dari tabel users, profiles, gigs, applications, reviews, dan messages. Kami menambahkan database triggers untuk otomatis memperbarui skor reputasi rating mahasiswa secara real-time setiap kali proyek selesai disetujui."*
 
-### Pembicara 4: Naila (Prototyper) - Arsitektur & Database
-> *"Saya Naila. Proyek SkillGate ini dibangun di atas arsitektur serverless web modern 3-Tier menggunakan **Next.js 16 (App Router)** di sisi frontend dan **Supabase PostgreSQL** di sisi data layer. Hal ini memastikan performa load page di bawah 2 detik.*
+### Pembicara 4: Rifqi (UI/UX Designer) - Integrasi LLM, UAT & Kesimpulan
+> *"Saya Rifqi. Pada aspek inovasi, kami mengintegrasikan Large Language Model (LLM) Gemini sebagai Resume Executive Summary Generator pada halaman portofolio mahasiswa untuk merangkum kinerja mereka secara otomatis.
 >
-> *Dari sisi desain database, Logical Data Model kami terdiri dari entitas users, profiles (mahasiswa & umkm), gigs, applications, reviews, dan messages. Kami menerapkan trigger otomatis di database untuk memutakhirkan rating rata-rata freelancer setiap kali proyek dinyatakan selesai oleh UMKM."*
-
-### Pembicara 5: Rifqi (UI/UX Designer) - Integrasi LLM & Kesimpulan
-> *"Saya Rifqi. Salah satu aspek inovasi di SkillGate adalah integrasi **Large Language Model (LLM)** menggunakan model Gemini. AI bertindak sebagai *Resume Summary Generator* yang merangkum riwayat kerja mahasiswa di platform secara otomatis.*
+> Kami telah melakukan verifikasi kompilasi build produksi Next.js secara sukses 100%. Pengujian fungsional dan User Acceptance Testing (UAT) dilakukan dengan mensimulasikan peran mahasiswa dan UMKM, serta memverifikasi keamanan policy RLS database.
 >
-> *Kesimpulannya, prototipe SkillGate berhasil menjawab seluruh user stories dari PRD kami. Seluruh fungsionalitas, mulai dari kuis kesiapan hingga sistem notifikasi toast premium, telah lolos uji build produksi Next.js.*
+> Kesimpulannya, prototipe SkillGate berhasil menjawab seluruh user stories dari PRD. Saran kami ke depan adalah mengintegrasikan payment gateway perbankan riil seperti Midtrans untuk menggantikan simulasi escrow. 
 >
-> *Berikutnya, kami akan mensimulasikan alur kerja sistem melalui demo program."*
+> Berikutnya, kami akan menyajikan demonstrasi program live."*
 
 ---
 
