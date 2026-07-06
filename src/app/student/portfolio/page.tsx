@@ -67,20 +67,18 @@ export default function PortfolioPage() {
         }
 
         // Fetch completed gigs for this student
-        const { data: completedGigs } = await supabase
+        const { data: completedGigs, error: gigsError } = await supabase
           .from("gigs")
           .select(`
-            id, title, category, budget, completed_at, updated_at, output_expected,
-            umkm:umkm_id (
-              full_name,
-              umkm_profiles (business_name, avatar_url)
-            ),
-            reviews (
-              rating, comment
-            )
+            id, title, category, budget, skills_required, updated_at, output_expected, umkm_id,
+            reviews ( rating, comment )
           `)
           .eq("accepted_student_id", user.id)
           .eq("status", "completed");
+
+        if (gigsError) {
+          console.error("Error fetching completed gigs:", gigsError);
+        }
 
         if (completedGigs && completedGigs.length > 0) {
           let earningsSum = 0;
@@ -88,11 +86,29 @@ export default function PortfolioPage() {
           let ratingCount = 0;
           const clientsSet = new Set<string>();
 
+          // Resolve UMKM names for all unique umkm_ids
+          const umkmIds = [...new Set(completedGigs.map((g: any) => g.umkm_id))];
+          const { data: umkmUsers } = await supabase
+            .from("users")
+            .select("id, full_name")
+            .in("id", umkmIds);
+          const { data: umkmProfiles } = await supabase
+            .from("umkm_profiles")
+            .select("user_id, business_name")
+            .in("user_id", umkmIds);
+
+          const umkmNameMap: Record<string, string> = {};
+          for (const uid of umkmIds) {
+            const profile = umkmProfiles?.find((p: any) => p.user_id === uid);
+            const user_ = umkmUsers?.find((u: any) => u.id === uid);
+            umkmNameMap[uid] = profile?.business_name || user_?.full_name || "UMKM";
+          }
+
           const dbEntries = completedGigs.map((gig: any, idx: number) => {
             const budgetNum = Number(gig.budget) || 0;
             earningsSum += budgetNum;
 
-            const clientName = gig.umkm?.umkm_profiles?.[0]?.business_name || gig.umkm?.full_name || "UMKM";
+            const clientName = umkmNameMap[gig.umkm_id] || "UMKM";
             clientsSet.add(clientName);
 
             const review = gig.reviews && gig.reviews.length > 0 ? gig.reviews[0] : null;
