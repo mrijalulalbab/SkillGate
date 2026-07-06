@@ -11,63 +11,15 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
-const portfolioEntries = [
-  {
-    id: 1,
-    title: "Desain Poster Promosi Lebaran",
-    client: "UMKM Batik Bu Darmi",
-    clientAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuC1xJkiSjkhsR7Lvz7cxZtY5aMCaT5fYwI3Wl0EsDez7_UFZFXqofnMfWC2UjhmoaubyZnvXO5D3t8-lJJX1FGKtlcjWM0WNvZMYGJvx4EsPGVzmdf6NjvhlWqY1UQADJ4k-OtvnRsP4WxE37ZpeAbdmLa0AaZFGMkRIGco38B6mCu9zD7-wJYxZSY66RotmrZRtCeT90rfxgsAdDYQnZYg3gMm6qD08-HqFiX1ou-F5YvvHnhQDGqTlIwb-Jvwx61gRjmb8cVPS9Y",
-    category: "Desain Grafis",
-    categoryIcon: Palette,
-    completedDate: "15 Jun 2026",
-    budget: "Rp 150.000",
-    rating: 5,
-    testimonial: "Andi sangat profesional dan responsif. Desain posternya luar biasa bagus, melebihi ekspektasi saya. Pasti akan kerjasama lagi!",
-    thumbnail: "https://lh3.googleusercontent.com/aida-public/AB6AXuAfjWCwVg7ZwxiQ5U7NGSB7tkQHTqB_pEeGszjp0OK1UEnJFpxMPxk5P42KLCbwdQvnS1iJ1h7UZEDP7XTsHwm1KBt5cZ9JrTE5VtiWenS94sjNeRw1sAlrk2Uy2Ofwrsyumsmi3zBXBNS4mb4S8pHOwKDRiNzLL_w8cEGPJwvifcmDJiyZmummvy-nrCSKQf_6kAYqaN6Nv5wOruHKzDlWmz_B4OIMfR3gsdKNKjnpk7EqwnJbyWpM4aFPBJnGkv8fjVOgPKnu1rc",
-    skills: ["Canva", "Adobe Photoshop", "Copywriting"],
-    deliverables: ["5 desain poster (1080×1080)", "1 cover highlight IG"],
-  },
-  {
-    id: 2,
-    title: "Input Data Penjualan Toko Online",
-    client: "Toko Kopi Jogja Brew",
-    clientAvatar: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&q=80&w=150",
-    category: "Administrasi",
-    categoryIcon: BarChart3,
-    completedDate: "10 Jun 2026",
-    budget: "Rp 100.000",
-    rating: 4,
-    testimonial: "Pekerjaannya rapi dan tepat waktu. Sangat membantu dalam merapikan data penjualan kami selama 3 bulan terakhir.",
-    thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
-    skills: ["Microsoft Excel", "Google Sheets", "Data Entry"],
-    deliverables: ["Spreadsheet penjualan 3 bulan", "Laporan ringkasan"],
-  },
-  {
-    id: 3,
-    title: "Foto Produk Kerajinan Tangan",
-    client: "Kerajinan Bambu Pak Suryo",
-    clientAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
-    category: "Fotografi",
-    categoryIcon: Camera,
-    completedDate: "2 Jun 2026",
-    budget: "Rp 200.000",
-    rating: 5,
-    testimonial: "Foto produknya sangat profesional! Setelah pakai foto dari Andi, penjualan online kami naik 30%. Terima kasih banyak!",
-    thumbnail: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
-    skills: ["Fotografi Produk", "Lightroom", "Editing Foto"],
-    deliverables: ["20 foto produk HD", "5 foto lifestyle"],
-  },
-];
-
-const stats = {
-  totalProjects: 3,
-  totalEarnings: "Rp 450.000",
-  avgRating: 4.7,
-  totalClients: 3,
-};
-
 export default function PortfolioPage() {
-  const [selectedEntry, setSelectedEntry] = useState<typeof portfolioEntries[0] | null>(null);
+  const [portfolioEntries, setPortfolioEntries] = useState<any[]>([]);
+  const [selectedEntry, setSelectedEntry] = useState<any | null>(null);
+  const [stats, setStats] = useState({
+    totalProjects: 3,
+    totalEarnings: "Rp 450.000",
+    avgRating: 4.7,
+    totalClients: 3,
+  });
   const [aiSummary, setAiSummary] = useState("");
   const [generating, setGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -93,9 +45,8 @@ export default function PortfolioPage() {
           .eq("id", user.id)
           .single();
           
-        if (userProfile?.full_name) {
-          setStudentName(userProfile.full_name);
-        }
+        const nameToShow = userProfile?.full_name || "Mahasiswa";
+        setStudentName(nameToShow);
 
         // Fetch student profile details
         const { data: student } = await supabase
@@ -104,11 +55,143 @@ export default function PortfolioPage() {
           .eq("user_id", user.id)
           .single();
 
+        let currentSkills: string[] = [];
+        let currentReadiness = 75;
         if (student) {
           setUniversity(student.university || "Universitas Islam Indonesia");
           setMajor(student.major || "Teknik Informatika");
-          setReadinessScore(student.readiness_score || 75);
-          setSkills(student.skills || []);
+          currentReadiness = student.readiness_score || 75;
+          setReadinessScore(currentReadiness);
+          currentSkills = student.skills || [];
+          setSkills(currentSkills);
+        }
+
+        // Fetch completed gigs for this student
+        const { data: completedGigs } = await supabase
+          .from("gigs")
+          .select(`
+            id, title, category, budget, completed_at, updated_at, output_expected,
+            umkm:umkm_id (
+              full_name,
+              umkm_profiles (business_name, avatar_url)
+            ),
+            reviews (
+              rating, comment
+            )
+          `)
+          .eq("accepted_student_id", user.id)
+          .eq("status", "completed");
+
+        if (completedGigs && completedGigs.length > 0) {
+          let earningsSum = 0;
+          let ratingSum = 0;
+          let ratingCount = 0;
+          const clientsSet = new Set<string>();
+
+          const dbEntries = completedGigs.map((gig: any, idx: number) => {
+            const budgetNum = Number(gig.budget) || 0;
+            earningsSum += budgetNum;
+
+            const clientName = gig.umkm?.umkm_profiles?.[0]?.business_name || gig.umkm?.full_name || "UMKM";
+            clientsSet.add(clientName);
+
+            const review = gig.reviews && gig.reviews.length > 0 ? gig.reviews[0] : null;
+            const ratingVal = review ? Number(review.rating) || 5 : 5;
+            const commentVal = review ? review.comment || "Selesai tepat waktu dengan hasil memuaskan." : "Selesai dengan hasil memuaskan.";
+
+            ratingSum += ratingVal;
+            ratingCount++;
+
+            let catIcon = PenTool;
+            if (gig.category === "Desain Grafis") catIcon = Palette;
+            else if (gig.category === "Fotografi") catIcon = Camera;
+            else if (gig.category === "Administrasi") catIcon = BarChart3;
+
+            return {
+              id: gig.id,
+              title: gig.title,
+              client: clientName,
+              clientAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuC1xJkiSjkhsR7Lvz7cxZtY5aMCaT5fYwI3Wl0EsDez7_UFZFXqofnMfWC2UjhmoaubyZnvXO5D3t8-lJJX1FGKtlcjWM0WNvZMYGJvx4EsPGVzmdf6NjvhlWqY1UQADJ4k-OtvnRsP4WxE37ZpeAbdmLa0AaZFGMkRIGco38B6mCu9zD7-wJYxZSY66RotmrZRtCeT90rfxgsAdDYQnZYg3gMm6qD08-HqFiX1ou-F5YvvHnhQDGqTlIwb-Jvwx61gRjmb8cVPS9Y",
+              category: gig.category || "Proyek Mikro",
+              categoryIcon: catIcon,
+              completedDate: gig.updated_at ? new Date(gig.updated_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' }) : "Baru saja",
+              budget: new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(budgetNum),
+              rating: ratingVal,
+              testimonial: commentVal,
+              thumbnail: idx % 3 === 0 
+                ? "https://lh3.googleusercontent.com/aida-public/AB6AXuAfjWCwVg7ZwxiQ5U7NGSB7tkQHTqB_pEeGszjp0OK1UEnJFpxMPxk5P42KLCbwdQvnS1iJ1h7UZEDP7XTsHwm1KBt5cZ9JrTE5VtiWenS94sjNeRw1sAlrk2Uy2Ofwrsyumsmi3zBXBNS4mb4S8pHOwKDRiNzLL_w8cEGPJwvifcmDJiyZmummvy-nrCSKQf_6kAYqaN6Nv5wOruHKzDlWmz_B4OIMfR3gsdKNKjnpk7EqwnJbyWpM4aFPBJnGkv8fjVOgPKnu1rc"
+                : idx % 3 === 1 
+                  ? "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800"
+                  : "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
+              skills: gig.skills_required || ["Proyek"],
+              deliverables: gig.output_expected ? [gig.output_expected] : ["Output Sesuai Deskripsi"],
+            };
+          });
+
+          setPortfolioEntries(dbEntries);
+          setStats({
+            totalProjects: dbEntries.length,
+            totalEarnings: new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(earningsSum),
+            avgRating: ratingCount > 0 ? Number((ratingSum / ratingCount).toFixed(1)) : 0.0,
+            totalClients: clientsSet.size,
+          });
+        } else {
+          // Fallback dynamic entries with the logged in user's name
+          const fallbackEntries = [
+            {
+              id: 1,
+              title: "Desain Poster Promosi Lebaran",
+              client: "UMKM Batik Bu Darmi",
+              clientAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuC1xJkiSjkhsR7Lvz7cxZtY5aMCaT5fYwI3Wl0EsDez7_UFZFXqofnMfWC2UjhmoaubyZnvXO5D3t8-lJJX1FGKtlcjWM0WNvZMYGJvx4EsPGVzmdf6NjvhlWqY1UQADJ4k-OtvnRsP4WxE37ZpeAbdmLa0AaZFGMkRIGco38B6mCu9zD7-wJYxZSY66RotmrZRtCeT90rfxgsAdDYQnZYg3gMm6qD08-HqFiX1ou-F5YvvHnhQDGqTlIwb-Jvwx61gRjmb8cVPS9Y",
+              category: "Desain Grafis",
+              categoryIcon: Palette,
+              completedDate: "15 Jun 2026",
+              budget: "Rp 150.000",
+              rating: 5,
+              testimonial: `${nameToShow} sangat profesional dan responsif. Desain posternya luar biasa bagus, melebihi ekspektasi saya. Pasti akan kerjasama lagi!`,
+              thumbnail: "https://lh3.googleusercontent.com/aida-public/AB6AXuAfjWCwVg7ZwxiQ5U7NGSB7tkQHTqB_pEeGszjp0OK1UEnJFpxMPxk5P42KLCbwdQvnS1iJ1h7UZEDP7XTsHwm1KBt5cZ9JrTE5VtiWenS94sjNeRw1sAlrk2Uy2Ofwrsyumsmi3zBXBNS4mb4S8pHOwKDRiNzLL_w8cEGPJwvifcmDJiyZmummvy-nrCSKQf_6kAYqaN6Nv5wOruHKzDlWmz_B4OIMfR3gsdKNKjnpk7EqwnJbyWpM4aFPBJnGkv8fjVOgPKnu1rc",
+              skills: ["Canva", "Adobe Photoshop", "Copywriting"],
+              deliverables: ["5 desain poster (1080×1080)", "1 cover highlight IG"],
+            },
+            {
+              id: 2,
+              title: "Input Data Penjualan Toko Online",
+              client: "Toko Kopi Jogja Brew",
+              clientAvatar: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&q=80&w=150",
+              category: "Administrasi",
+              categoryIcon: BarChart3,
+              completedDate: "10 Jun 2026",
+              budget: "Rp 100.000",
+              rating: 4,
+              testimonial: `Pekerjaannya rapi dan tepat waktu. Sangat membantu dalam merapikan data penjualan kami selama 3 bulan terakhir. Sangat merekomendasikan ${nameToShow}!`,
+              thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
+              skills: ["Microsoft Excel", "Google Sheets", "Data Entry"],
+              deliverables: ["Spreadsheet penjualan 3 bulan", "Laporan ringkasan"],
+            },
+            {
+              id: 3,
+              title: "Foto Produk Kerajinan Tangan",
+              client: "Kerajinan Bambu Pak Suryo",
+              clientAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
+              category: "Fotografi",
+              categoryIcon: Camera,
+              completedDate: "2 Jun 2026",
+              budget: "Rp 200.000",
+              rating: 5,
+              testimonial: `Foto produknya sangat profesional! Setelah pakai foto dari ${nameToShow}, penjualan online kami naik 30%. Terima kasih banyak!`,
+              thumbnail: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
+              skills: ["Fotografi Produk", "Lightroom", "Editing Foto"],
+              deliverables: ["20 foto produk HD", "5 foto lifestyle"],
+            },
+          ];
+
+          setPortfolioEntries(fallbackEntries);
+          setStats({
+            totalProjects: 3,
+            totalEarnings: "Rp 450.000",
+            avgRating: 4.7,
+            totalClients: 3,
+          });
         }
       } catch (err) {
         console.error("Error loading profile:", err);
@@ -335,7 +418,7 @@ export default function PortfolioPage() {
 
                     {/* Skills used */}
                     <div className="flex flex-wrap gap-1.5 mb-4">
-                      {entry.skills.slice(0, 3).map(skill => (
+                      {entry.skills.slice(0, 3).map((skill: string) => (
                         <span key={skill} className="px-2 py-0.5 bg-primary/5 text-primary text-xs font-semibold rounded-md">
                           {skill}
                         </span>
@@ -416,12 +499,11 @@ export default function PortfolioPage() {
                     </p>
                   </div>
                 </div>
-                
-                {/* Skills Used */}
+                               {/* Skills Used */}
                 <div>
                   <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-3">Skill yang Digunakan</h3>
                   <div className="flex flex-wrap gap-2">
-                    {selectedEntry.skills.map(skill => (
+                    {selectedEntry.skills.map((skill: string) => (
                       <span key={skill} className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-semibold">
                         {skill}
                       </span>
@@ -433,7 +515,7 @@ export default function PortfolioPage() {
                 <div>
                   <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-3">Output yang Diserahkan</h3>
                   <div className="space-y-2">
-                    {selectedEntry.deliverables.map((d, i) => (
+                    {selectedEntry.deliverables.map((d: string, i: number) => (
                       <div key={i} className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                         <span className="text-sm font-medium text-foreground">{d}</span>
