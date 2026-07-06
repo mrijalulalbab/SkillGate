@@ -8,7 +8,8 @@ import {
   Palette, Camera, PenTool, BarChart3, Globe, Sparkles, Copy, Check, Loader2
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 const portfolioEntries = [
   {
@@ -72,6 +73,52 @@ export default function PortfolioPage() {
   const [copied, setCopied] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
 
+  const [studentName, setStudentName] = useState("Mahasiswa");
+  const [university, setUniversity] = useState("Universitas Islam Indonesia");
+  const [major, setMajor] = useState("Teknik Informatika");
+  const [readinessScore, setReadinessScore] = useState(75);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Fetch user full_name
+        const { data: userProfile } = await supabase
+          .from("users")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+          
+        if (userProfile?.full_name) {
+          setStudentName(userProfile.full_name);
+        }
+
+        // Fetch student profile details
+        const { data: student } = await supabase
+          .from("student_profiles")
+          .select("university, major, readiness_score, skills")
+          .eq("user_id", user.id)
+          .single();
+
+        if (student) {
+          setUniversity(student.university || "Universitas Islam Indonesia");
+          setMajor(student.major || "Teknik Informatika");
+          setReadinessScore(student.readiness_score || 75);
+          setSkills(student.skills || []);
+        }
+      } catch (err) {
+        console.error("Error loading profile:", err);
+      } finally {
+        setLoadingProfile(false);
+      }
+    }
+    loadProfile();
+  }, []);
+
   const handleGenerateSummary = () => {
     setGenerating(true);
     setLoadingStep("Mengambil data profil akademik...");
@@ -82,7 +129,7 @@ export default function PortfolioPage() {
         setLoadingStep("Menghubungkan ke API Gemini untuk menyusun deskripsi...");
         setTimeout(() => {
           setAiSummary(
-            "Andi Setiawan adalah mahasiswa Teknik Informatika Universitas Islam Indonesia yang memiliki kompetensi kuat di bidang Desain Grafis, Administrasi Data, dan Fotografi Produk. Melalui platform SkillGate, Andi telah menunjukkan kinerja luar biasa dengan menyelesaikan 3 proyek micro-gig dengan rating rata-rata 4.7/5.0 dan skor kesiapan kerja (readiness score) mencapai 75%, menjadikannya talenta yang sangat mandiri dan siap berkolaborasi secara profesional dengan UMKM."
+            `${studentName} adalah mahasiswa ${major} ${university} yang memiliki kompetensi kuat di bidang ${skills.length > 0 ? skills.slice(0, 3).join(', ') : 'Desain Grafis dan Administrasi Data'}. Melalui platform SkillGate, ${studentName} telah menunjukkan kinerja luar biasa dengan menyelesaikan 3 proyek micro-gig dengan rating rata-rata 4.7/5.0 dan skor kesiapan kerja (readiness score) mencapai ${readinessScore}%, menjadikannya talenta yang sangat mandiri dan siap berkolaborasi secara profesional dengan UMKM.`
           );
           setGenerating(false);
         }, 1000);
@@ -113,7 +160,7 @@ export default function PortfolioPage() {
                   <Award className="w-6 h-6" />
                   <span className="text-sm font-bold uppercase tracking-wider text-white/80">Portfolio Builder</span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-bold mb-3">Portofolio Andi Setiawan</h1>
+                <h1 className="text-3xl md:text-5xl font-bold mb-3">Portofolio {studentName}</h1>
                 <p className="text-white/80 text-lg max-w-xl">
                   Portofolio ini dibuat otomatis dari proyek-proyek yang telah Anda selesaikan di SkillGate. Bagikan ke calon klien atau lampirkan di CV Anda.
                 </p>
