@@ -35,20 +35,16 @@ Dokumen ini disusun untuk membantu kelompok **Nexus** membagi peran secara adil 
 > Secara non-fungsional, sistem wajib memenuhi aspek performa (load time kurang dari 2 detik), keamanan ketat (database PostgreSQL RLS), serta usabilitas responsif (layout bento grid) untuk smartphone."*
 
 ### Pembicara 3: Naila (Prototyper) - Desain Proses Bisnis, Use Case, Arsitektur & Database
-> *"Saya Naila. Kami merancang proses bisnis yang kolaboratif menggunakan BPMN, di mana alur pengerjaan terdokumentasi rapi mulai dari rekrutmen hingga penyelesaian proyek. Hak akses dari seluruh fungsi ini dikontrol secara terpusat melalui Use Case Diagram yang memetakan wewenang Mahasiswa, UMKM, dan Admin.
+> *"Saya Naila. Dari sudut pandang Sistem Informasi, kami merancang proses bisnis kolaboratif menggunakan BPMN untuk mengotomatisasi alur kerja rekrutmen hingga penyelesaian proyek secara aman. Pembagian hak akses dan batasan wewenang pengguna (Mahasiswa, UMKM, dan Admin) kami petakan secara formal menggunakan Use Case Diagram.
 >
-> Untuk arsitektur, kami mengimplementasikan Serverless React 3-Tier menggunakan Next.js 16 (App Router) di sisi frontend dan database relasional PostgreSQL (Supabase) di sisi backend. 
->
-> Skema database ERD kami terdiri dari tabel users, profiles, gigs, applications, reviews, dan messages. Kami menambahkan database triggers untuk otomatis memperbarui skor reputasi rating mahasiswa secara real-time setiap kali proyek selesai disetujui."*
+> Untuk arsitektur data, kami merancang Logical Data Model (ERD) relasional yang menghubungkan profil pengguna dengan data proyek, proposal, dan ulasan. Untuk menjamin konsistensi data, kami menerapkan Database Trigger otomatis yang menghitung akumulasi rating mahasiswa saat proyek selesai, memastikan informasi reputasi di sistem selalu mutakhir secara real-time."*
 
 ### Pembicara 4: Rifqi (UI/UX Designer) - Integrasi LLM, UAT & Kesimpulan
-> *"Saya Rifqi. Pada aspek inovasi, kami mengintegrasikan Large Language Model (LLM) Gemini sebagai Resume Executive Summary Generator pada halaman portofolio mahasiswa untuk merangkum kinerja mereka secara otomatis.
+> *"Saya Rifqi. Pada aspek inovasi kecerdasan sistem, kami mengintegrasikan Large Language Model (LLM) Gemini sebagai Resume Executive Summary Generator pada portofolio mahasiswa. AI secara cerdas mengolah data historis proyek dan kompetensi untuk menghasilkan ringkasan resume profesional instan.
 >
-> Kami telah melakukan verifikasi kompilasi build produksi Next.js secara sukses 100%. Pengujian fungsional dan User Acceptance Testing (UAT) dilakukan dengan mensimulasikan peran mahasiswa dan UMKM, serta memverifikasi keamanan policy RLS database.
+> Kami memverifikasi fungsionalitas sistem melalui User Acceptance Testing (UAT) untuk memastikan setiap skenario proses bisnis berjalan sesuai ekspektasi pengguna, serta menguji kebijakan Row Level Security (RLS) di basis data untuk mencegah kebocoran informasi antar-akun.
 >
-> Kesimpulannya, prototipe SkillGate berhasil menjawab seluruh user stories dari PRD. Saran kami ke depan adalah mengintegrasikan payment gateway perbankan riil seperti Midtrans untuk menggantikan simulasi escrow. 
->
-> Berikutnya, kami akan menyajikan demonstrasi program live."*
+> Kesimpulannya, SkillGate berhasil mengintegrasikan aspek manajemen data relasional, otomasi proses bisnis, dan teknologi AI dalam satu platform terpadu. Berikutnya, kami akan menyajikan demonstrasi program live."*
 
 ---
 
