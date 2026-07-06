@@ -228,9 +228,26 @@ Sistem ini dikembangkan menggunakan metodologi **Agile Scrum** yang berfokus pad
 *   **Input**: Filter kategori proyek, cover letter lamaran, penawaran budget, berkas portofolio lampiran (PDF/DOCX/JPG).
 *   **Output**: Data lamaran baru tersimpan di tabel `applications` dengan status `pending` dan notifikasi dikirim ke UMKM.
 
+```mermaid
+graph LR
+  A[Mahasiswa: Buka Papan Lowongan] --> B[Filter Kategori/Cari]
+  B --> C[Pilih Detail Proyek]
+  C --> D[Isi Detail Proposal & Upload Lampiran]
+  D --> E[Kirim Proposal]
+  E --> F[Sistem: Simpan Data & Notifikasi UMKM]
 ```
-[Mahasiswa: Buka Papan Lowongan] ➔ [Filter Kategori/Cari] ➔ [Pilih Detail Proyek] ➔ [Isi Detail Proposal & Upload Lampiran] ➔ [Kirim] ➔ [Sistem: Simpan Data & Notifikasi UMKM]
+<details>
+<summary><b>Salin Kode Mermaid Flowchart Mahasiswa</b></summary>
+
+```text
+graph LR
+  A[Mahasiswa: Buka Papan Lowongan] --> B[Filter Kategori/Cari]
+  B --> C[Pilih Detail Proyek]
+  C --> D[Isi Detail Proposal & Upload Lampiran]
+  D --> E[Kirim Proposal]
+  E --> F[Sistem: Simpan Data & Notifikasi UMKM]
 ```
+</details>
 
 #### 5.1.2 Proses Rekrutmen & Pembayaran Escrow (Sisi UMKM)
 *   **Deskripsi**: UMKM menerima notifikasi pelamar, meninjau persentase kecocokan kandidat, melakukan simulasi pembayaran escrow, dan menyetujui kontrak.
@@ -239,37 +256,112 @@ Sistem ini dikembangkan menggunakan metodologi **Agile Scrum** yang berfokus pad
 *   **Input**: Penilaian skor kecocokan pelamar, konfirmasi nominal escrow, tanda tangan digital kontrak.
 *   **Output**: Status proyek berubah menjadi `in_progress`, dana escrow ditahan oleh sistem, ruang obrolan obrolan proyek aktif.
 
+```mermaid
+graph LR
+  A[UMKM: Buka Proposal Masuk] --> B[Tinjau Analisis Match Pelamar]
+  B --> C[Klik Hire Pelamar]
+  C --> D[Lakukan Pembayaran Deposit Escrow]
+  D --> E[Tanda Tangan Kontrak SPK]
+  E --> F[Status Proyek: In Progress]
 ```
-[UMKM: Buka Proposal Masuk] ➔ [Tinjau Analisis Match Pelamar] ➔ [Klik Hire Pelamar] ➔ [Lakukan Pembayaran Deposit Escrow] ➔ [Tanda Tangan Kontrak SPK] ➔ [Status Proyek: In Progress]
+<details>
+<summary><b>Salin Kode Mermaid Flowchart UMKM</b></summary>
+
+```text
+graph LR
+  A[UMKM: Buka Proposal Masuk] --> B[Tinjau Analisis Match Pelamar]
+  B --> C[Klik Hire Pelamar]
+  C --> D[Lakukan Pembayaran Deposit Escrow]
+  D --> E[Tanda Tangan Kontrak SPK]
+  E --> F[Status Proyek: In Progress]
 ```
+</details>
 
 ### 5.2 Business Process Model Notation (BPMN)
-Alur proses bisnis kolaboratif antar aktor digambarkan secara ringkas menggunakan diagram BPMN berikut:
+Alur proses bisnis kolaboratif antar aktor digambarkan secara ringkas menggunakan diagram alur proses kerja (BPMN-like swimlanes) berikut:
 
 ```mermaid
-bpmn
-  title Alur Kerja Transaksi Jasa di SkillGate
-  
-  lane Mahasiswa
-    start -> m_daftar[Daftar Akun & Isi Profil] -> m_kuis[Ikuti Kuis Kesiapan Kerja]
-    m_kuis -> m_cari[Cari Lowongan Proyek] -> m_lamar[Kirim Proposal & Upload Portofolio]
-    m_lamar -> wait_hire[Menunggu Perekrutan]
-    wait_hire -> accept_work{Diterima?}
-    accept_work -- Tidak --> m_cari
-    accept_work -- Ya --> m_spk[Tanda Tangan SPK & Mulai Kerja]
-    m_spk -> m_kerja[Kerjakan & Centang Checklist Progres] -> m_submit[Submit Berkas Final]
-    m_submit -> m_done[Selesai & Terima Honorarium] -> end_event
-  
-  lane UMKM
-    start -> u_daftar[Daftar Usaha & Upload KTP/NIB] -> u_post[Posting Lowongan Proyek]
-    u_post -> u_review[Tinjau Proposal & Rekomendasi Pelamar] -> hire_student[Klik Terima Pelamar]
-    hire_student -> u_escrow[Bayar Deposit Escrow] -> u_spk[Tanda Tangan SPK]
-    u_spk -> u_monitor[Pantau Progres Kerja Real-time] -> u_review_work[Tinjau Berkas Hasil Kerja]
-    u_review_work -> approve_work{Setujui?}
-    approve_work -- Tidak --> reject_revisi[Minta Revisi] -> u_monitor
-    approve_work -- Ya --> u_complete[Klik Selesaikan & Beri Rating/Testimoni]
-    u_complete -> end_event
+graph TD
+  subgraph Mahasiswa [Lane: Mahasiswa]
+    m1([Start]) --> m2[Daftar Akun & Isi Profil]
+    m2 --> m3[Ikuti Kuis Kesiapan Kerja]
+    m3 --> m4[Cari Lowongan & Kirim Proposal]
+    m4 --> m5{Diterima?}
+    m5 -- Ya --> m6[Tanda Tangan SPK & Mulai Kerja]
+    m5 -- Tidak --> m4
+    m6 --> m7[Kerjakan & Centang Progress]
+    m7 --> m8[Submit Berkas Kerja Final]
+    m8 --> m9([Selesai & Terima Honor])
+  end
+
+  subgraph UMKM [Lane: UMKM]
+    u1([Start]) --> u2[Daftar Usaha & Upload NIB]
+    u2 --> u3[Posting Lowongan Proyek]
+    u3 --> u4[Tinjau Proposal & Match Pelamar]
+    u4 --> u5[Klik Terima Pelamar]
+    u5 --> u6[Bayar Deposit Escrow & Tanda SPK]
+    u6 --> u7[Pantau Progres Kerja Real-time]
+    u7 --> u8[Tinjau Berkas Hasil Kerja]
+    u8 --> u9{Setuju?}
+    u9 -- Ya --> u10[Klik Selesaikan & Beri Rating]
+    u9 -- Tidak --> u11[Minta Revisi]
+    u11 --> u7
+  end
+
+  m4 -.->|Kirim Proposal| u4
+  u6 -.->|Kontrak Aktif| m6
+  m8 -.->|Kirim Hasil Kerja| u8
+  u10 -.->|Bayar Honor| m9
 ```
+
+<details>
+<summary><b>Salin Kode Mermaid BPMN</b></summary>
+
+```text
+graph TD
+  subgraph Mahasiswa [Lane: Mahasiswa]
+    m1([Start]) --> m2[Daftar Akun & Isi Profil]
+    m2 --> m3[Ikuti Kuis Kesiapan Kerja]
+    m3 --> m4[Cari Lowongan & Kirim Proposal]
+    m5{Diterima?}
+    m5 -- Ya --> m6[Tanda Tangan SPK & Mulai Kerja]
+    m5 -- Tidak --> m4
+    m6 --> m7[Kerjakan & Centang Progress]
+    m7 --> m8[Submit Berkas Kerja Final]
+    m9([Selesai & Terima Honor])
+  end
+
+  subgraph UMKM [Lane: UMKM]
+    u1([Start]) --> u2[Daftar Usaha & Upload NIB]
+    u2 --> u3[Posting Lowongan Proyek]
+    u3 --> u4[Tinjau Proposal & Match Pelamar]
+    u4 --> u5[Klik Terima Pelamar]
+    u5 --> u6[Bayar Deposit Escrow & Tanda SPK]
+    u6 --> u7[Pantau Progres Kerja Real-time]
+    u7 --> u8[Tinjau Berkas Hasil Kerja]
+    u9{Setuju?}
+    u9 -- Ya --> u10[Klik Selesaikan & Beri Rating]
+    u9 -- Tidak --> u11[Minta Revisi]
+    u11 --> u7
+  end
+
+  m4 -.->|Kirim Proposal| u4
+  u6 -.->|Kontrak Aktif| m6
+  m8 -.->|Kirim Hasil Kerja| u8
+  u10 -.->|Bayar Honor| m9
+```
+</details>
+
+> [!TIP]
+> **Petunjuk Membuat Diagram BPMN Formal dengan Mudah dan Estetik:**
+> 1. **Rekomendasi Tool**: Gunakan [bpmn.io (Demo Online)](https://demo.bpmn.io/) atau [Figma](https://figma.com/) (menggunakan plugin "BPMN Diagram Generator" atau template FigJam).
+> 2. **Langkah Pembuatan**:
+>    - Buat 2 Pool Horizontal: **Mahasiswa** dan **UMKM**.
+>    - Tambahkan elemen *Start Event* (lingkaran tipis) di masing-masing pool.
+>    - Gambar alur tugas menggunakan *Activity/Task* (persegi tumpul).
+>    - Gunakan *Gateway* (belah ketupat) untuk keputusan penting seperti "Setujui?" dan "Diterima?".
+>    - Hubungkan proses internal dengan *Sequence Flow* (garis panah lurus), dan koordinasi antar pool dengan *Message Flow* (garis putus-putus dengan lingkaran kosong).
+>    - Ekspor diagram hasil akhir ke format **SVG** atau **PNG** berkualitas tinggi, kemudian masukkan ke laporan Anda.
 
 ---
 
@@ -293,30 +385,102 @@ bpmn
 | **Moderasi & Verifikasi** | ✗ | ✗ | ✓ | Admin meninjau data NIB UMKM dan status moderasi lowongan. |
 
 ### 6.3 Use Case Diagram
-Struktur interaksi aktor dengan sistem didefinisikan sebagai berikut:
+Struktur interaksi aktor dengan sistem didefinisikan secara visual menggunakan diagram Use Case berikut:
 
 ```mermaid
-usecaseDiagram
-  actor Mahasiswa
-  actor UMKM
-  actor Admin
-  
-  Mahasiswa --> (Registrasi & Kuis Kesiapan)
-  Mahasiswa --> (Cari Proyek & Kirim Proposal)
-  Mahasiswa --> (Mengelola Proyek Saya)
-  Mahasiswa --> (Mengisi Checklist & Submit Hasil Kerja)
-  Mahasiswa --> (Chatting dengan Klien)
-  
-  UMKM --> (Registrasi Profil Usaha & Verifikasi)
-  UMKM --> (Posting Proyek Baru & Preview)
-  UMKM --> (Kelola Proyek & Tinjau Pelamar)
-  UMKM --> (Tinjau Hasil & Selesaikan Proyek)
-  UMKM --> (Chatting dengan Pelaksana)
-  
-  Admin --> (Verifikasi Akun UMKM)
-  Admin --> (Moderasi Lowongan Proyek)
-  Admin --> (Monitoring Dashboard Analytics)
+graph LR
+  subgraph Aktor [Aktor Pengguna]
+    M[Mahasiswa]
+    U[UMKM]
+    A[Admin]
+  end
+
+  subgraph Batas_Sistem [Batas Sistem: SkillGate]
+    uc1((Registrasi & Kuis Kesiapan))
+    uc2((Cari Proyek & Kirim Proposal))
+    uc3((Mengelola Proyek Saya))
+    uc4((Milestone Progres & Submit Output))
+    uc5((Chatting Kolaboratif))
+    uc6((Daftar Usaha & Verifikasi NIB))
+    uc7((Posting Proyek & Live Preview))
+    uc8((Tinjau Pelamar & Match Score))
+    uc9((Konfirmasi Hasil & Rating Review))
+    uc10((Verifikasi Akun UMKM))
+    uc11((Moderasi Lowongan Proyek))
+    uc12((Monitoring Dashboard Analytics))
+  end
+
+  M --> uc1
+  M --> uc2
+  M --> uc3
+  M --> uc4
+  M --> uc5
+
+  U --> uc6
+  U --> uc7
+  U --> uc8
+  U --> uc9
+  U --> uc5
+
+  A --> uc10
+  A --> uc11
+  A --> uc12
 ```
+
+<details>
+<summary><b>Salin Kode Mermaid Use Case Diagram</b></summary>
+
+```text
+graph LR
+  subgraph Aktor [Aktor Pengguna]
+    M[Mahasiswa]
+    U[UMKM]
+    A[Admin]
+  end
+
+  subgraph Batas_Sistem [Batas Sistem: SkillGate]
+    uc1((Registrasi & Kuis Kesiapan))
+    uc2((Cari Proyek & Kirim Proposal))
+    uc3((Mengelola Proyek Saya))
+    uc4((Milestone Progres & Submit Output))
+    uc5((Chatting Kolaboratif))
+    uc6((Daftar Usaha & Verifikasi NIB))
+    uc7((Posting Proyek & Live Preview))
+    uc8((Tinjau Pelamar & Match Score))
+    uc9((Konfirmasi Hasil & Rating Review))
+    uc10((Verifikasi Akun UMKM))
+    uc11((Moderasi Lowongan Proyek))
+    uc12((Monitoring Dashboard Analytics))
+  end
+
+  M --> uc1
+  M --> uc2
+  M --> uc3
+  M --> uc4
+  M --> uc5
+
+  U --> uc6
+  U --> uc7
+  U --> uc8
+  U --> uc9
+  U --> uc5
+
+  A --> uc10
+  A --> uc11
+  A --> uc12
+```
+</details>
+
+> [!TIP]
+> **Petunjuk Membuat Diagram Use Case Formal dengan Mudah:**
+> 1. **Rekomendasi Tool**: Gunakan [Visual Paradigm Online](https://online.visual-paradigm.com/) atau [Draw.io](https://draw.io/).
+> 2. **Langkah Pembuatan**:
+>    - Letakkan simbol *Stick Man* untuk aktor **Mahasiswa**, **UMKM**, dan **Admin** di luar kotak batas sistem.
+>    - Gambar kotak persegi panjang besar di tengah sebagai *System Boundary* dan beri label **"SkillGate"**.
+>    - Masukkan simbol *Oval* (Use Case) di dalam kotak batas sistem untuk setiap aktivitas utama (misal: "Posting Proyek", "Kirim Proposal").
+>    - Hubungkan aktor dengan use case yang sesuai menggunakan garis lurus tanpa panah (*Association Relationship*).
+>    - Gunakan relasi `<<include>>` (garis putus-putus dengan panah mengarah ke use case pendukung) jika suatu use case membutuhkan use case lain (misal: "Kirim Proposal" `<<include>>` "Lulus Kuis Kesiapan").
+>    - Simpan/Ekspor ke format PNG/SVG untuk disisipkan.
 
 ### 6.4 Skenario Use Case (Contoh: Menyeleksi Pelamar Terbaik - UC-04)
 *   **ID**: UC-04
@@ -358,6 +522,34 @@ erDiagram
     gigs ||--o{ reviews : "rated_by"
     users ||--o{ notifications : "receives"
 ```
+
+<details>
+<summary><b>Salin Kode Mermaid ERD (Conceptual)</b></summary>
+
+```text
+erDiagram
+    users ||--o| student_profiles : "has"
+    users ||--o| umkm_profiles : "has"
+    users ||--o{ gigs : "posts"
+    users ||--o{ applications : "submits"
+    gigs ||--o{ applications : "receives"
+    gigs ||--o{ messages : "relates_to"
+    users ||--o{ messages : "sends"
+    gigs ||--o{ reviews : "rated_by"
+    users ||--o{ notifications : "receives"
+```
+</details>
+
+> [!TIP]
+> **Petunjuk Membuat Diagram ERD Relasional yang Rapi:**
+> 1. **Rekomendasi Tool**: Gunakan [dbdiagram.io](https://dbdiagram.io/) (sangat mudah dengan kode teks DBML), [Draw.io](https://draw.io/), atau [Lucidchart](https://www.lucidchart.com/).
+> 2. **Langkah Pembuatan**:
+>    - Masukkan setiap tabel sebagai kotak entitas lengkap dengan tipe datanya (misal: `id: UUID (PK)`, `budget: NUMERIC`, `skills_required: TEXT[]`).
+>    - Hubungkan tabel menggunakan garis relasi Crow's Foot:
+>      - Garis lurus dengan dua garis silang (`||--||` atau `||--o|`) untuk relasi **One-to-One** (misal: `users` ke `student_profiles`).
+>      - Garis bercabang tiga (`||--o{`) untuk relasi **One-to-Many** (misal: `users` ke `gigs`).
+>    - Letakkan Kunci Utama (PK) di baris paling atas tabel, diikuti Kunci Asing (FK) di baris bawah.
+>    - Ekspor file ke PNG/PDF untuk dimasukkan ke laporan sebagai representasi fisik database.
 
 ### 7.3 Logical Data Model
 
@@ -453,10 +645,60 @@ CREATE TABLE public.gigs (
 | **AI Resume Summarizer** | Merangkum data profil, keahlian akademik, dan histori proyek kerja di platform menjadi deskripsi profil ringkas 3 kalimat. | Nama, Universitas, Jurusan, Keahlian, Daftar judul proyek selesai & rating. | Paragraf ringkasan eksekutif profil profesional yang siap disalin ke LinkedIn/CV. | Menghemat waktu mahasiswa dalam menulis deskripsi diri yang menjual. |
 
 ### 8.4 Implementasi LLM
+
 #### 8.4.1 Arsitektur Integrasi
+Alur koordinasi komunikasi sistem dengan kecerdasan buatan LLM Gemini digambarkan pada diagram sekuensial berikut:
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Student as Mahasiswa (Browser)
+  participant FE as Frontend (/student/portfolio)
+  participant BE as API Route (/api/generate-summary)
+  participant GM as Google Gemini API
+  participant DB as Supabase Database
+
+  Student ->> FE: Klik "Buat Ringkasan AI"
+  FE ->> DB: Fetch data profil (skills, readiness)
+  DB -->> FE: Kirim data profil
+  FE ->> BE: POST Request (payload: nama, skills, kuis)
+  BE ->> GM: Kirim Prompt Terstruktur + Data Mahasiswa
+  GM -->> BE: Response Ringkasan Karir (JSON)
+  BE -->> FE: Kirim Ringkasan Resume
+  FE ->> Student: Tampilkan Ringkasan & Tombol Salin
 ```
-[Client App: Klik Buat Ringkasan AI] ➔ [API Route: /api/generate-summary] ➔ [Google Gemini SDK] ➔ [Response] ➔ [Simpan ke State Profil & Tampilkan]
+
+<details>
+<summary><b>Salin Kode Mermaid Arsitektur Integrasi LLM</b></summary>
+
+```text
+sequenceDiagram
+  autonumber
+  actor Student as Mahasiswa (Browser)
+  participant FE as Frontend (/student/portfolio)
+  participant BE as API Route (/api/generate-summary)
+  participant GM as Google Gemini API
+  participant DB as Supabase Database
+
+  Student ->> FE: Klik "Buat Ringkasan AI"
+  FE ->> DB: Fetch data profil (skills, readiness)
+  DB -->> FE: Kirim data profil
+  FE ->> BE: POST Request (payload: nama, skills, kuis)
+  BE ->> GM: Kirim Prompt Terstruktur + Data Mahasiswa
+  GM -->> BE: Response Ringkasan Karir (JSON)
+  BE -->> FE: Kirim Ringkasan Resume
+  FE ->> Student: Tampilkan Ringkasan & Tombol Salin
 ```
+</details>
+
+> [!TIP]
+> **Petunjuk Membuat Diagram Sekuensial Integrasi AI yang Bagus:**
+> 1. **Rekomendasi Tool**: Gunakan [WebSequenceDiagrams](https://www.websequencediagrams.com/) atau [Draw.io](https://draw.io/) (shape jenis "UML Sequence").
+> 2. **Langkah Pembuatan**:
+>    - Urutkan aktor dan subsistem dari kiri ke kanan secara kronologis: Aktor Mahasiswa -> Halaman Portfolio -> API Route `/api/generate-summary` -> Gemini SDK -> Supabase DB.
+>    - Gunakan garis panah penuh (`->`) untuk panggilan sinkron dan garis panah putus-putus (`-->`) untuk data kembalian (*response return*).
+>    - Tambahkan penomoran urutan proses secara berurutan guna mempermudah pemahaman alur data.
+
 #### 8.4.2 Prompt Engineering
 ```markdown
 Role: Profesional Recruiter & Resume Writer Bahasa Indonesia
@@ -474,12 +716,62 @@ Format: JSON {"summary": "teks ringkasan di sini"}
 #### 9.1.1 System Architecture Diagram
 Aplikasi mengikuti arsitektur web modern **Serverless React 3-Tier**:
 
+```mermaid
+graph TD
+  subgraph Presentation_Layer [Presentation Layer - Client Side]
+    FE1[Next.js Client Components]
+    FE2[Tailwind CSS & Lucide Icons]
+  end
+
+  subgraph Application_Layer [Application Layer - Serverless API]
+    BE1[Next.js API Routes]
+    BE2[Supabase JS Client SDK]
+  end
+
+  subgraph Data_Layer [Data Layer - Backend Cloud]
+    DB1[(PostgreSQL Database)]
+    DB2[Supabase Auth JWT]
+    DB3[Supabase Storage Buckets]
+  end
+
+  Presentation_Layer -->|HTTP Requests / WebSockets| Application_Layer
+  Application_Layer -->|SQL Queries / Auth Checks| Data_Layer
 ```
-[Presentation Layer]     ➔     [Application Layer (Backend)]     ➔     [Data Layer]
-  (Next.js Client-Side)           (Next.js Route Handlers / API)          (Supabase DB & Auth)
-  TypeScript React Components      Serverless Functions                    PostgreSQL Database
-  Tailwind CSS Rendering           Supabase Client Libraries               Supabase Storage Buckets
+
+<details>
+<summary><b>Salin Kode Mermaid Arsitektur Sistem 3-Tier</b></summary>
+
+```text
+graph TD
+  subgraph Presentation_Layer [Presentation Layer - Client Side]
+    FE1[Next.js Client Components]
+    FE2[Tailwind CSS & Lucide Icons]
+  end
+
+  subgraph Application_Layer [Application Layer - Serverless API]
+    BE1[Next.js API Routes]
+    BE2[Supabase JS Client SDK]
+  end
+
+  subgraph Data_Layer [Data Layer - Backend Cloud]
+    DB1[(PostgreSQL Database)]
+    DB2[Supabase Auth JWT]
+    DB3[Supabase Storage Buckets]
+  end
+
+  Presentation_Layer -->|HTTP Requests / WebSockets| Application_Layer
+  Application_Layer -->|SQL Queries / Auth Checks| Data_Layer
 ```
+</details>
+
+> [!TIP]
+> **Petunjuk Membuat Diagram Arsitektur 3-Tier yang Premium:**
+> 1. **Rekomendasi Tool**: Gunakan [Figma](https://figma.com/) dengan kit ikon cloud (Vercel, Next.js, Postgres, Supabase) atau [Draw.io](https://draw.io/).
+> 2. **Langkah Pembuatan**:
+>    - Susun 3 kolom/kotak besar dari atas ke bawah: **Presentation Layer (Klien)**, **Application Layer (API)**, dan **Data Layer (Awan/DB)**.
+>    - Gunakan warna latar belakang pastel yang berbeda lembut untuk masing-masing layer guna membedakan tanggung jawab wewenang (*separation of concerns*).
+>    - Masukkan ikon atau logo resmi (PostgreSQL, Vercel, Next.js, Tailwind) di setiap representasi modul agar diagram terlihat modis dan berkelas profesional.
+>    - Sambungkan antar layer dengan panah tebal bermata dua untuk merepresentasikan request-response dua arah.
 
 #### 9.1.2 Technology Stack
 *   **Frontend**: Next.js 16.2 (React 19, Turbopack compiler)
