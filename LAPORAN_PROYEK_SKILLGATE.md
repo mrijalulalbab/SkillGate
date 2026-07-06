@@ -191,23 +191,29 @@ Sistem ini dikembangkan menggunakan metodologi **Agile Scrum** yang berfokus pad
 ### 4.1 Kebutuhan Fungsional
 
 #### 4.1.1 Kebutuhan Mahasiswa
-*   **FR-01 (Pendaftaran & Profil)**: Sistem harus memungkinkan mahasiswa mendaftar akun dengan universitas, jurusan, ketersediaan jam kerja, dan tag keterampilan.
-*   **FR-02 (Kuis Kesiapan)**: Sistem harus menyajikan kuis kesiapan kerja (5 pertanyaan pilihan ganda) dan menghasilkan Skor Kesiapan Kerja secara otomatis.
-*   **FR-03 (Pencarian Proyek)**: Sistem harus memfasilitasi pencarian dan pemfilteran lowongan proyek berdasarkan kategori industri dan kata kunci pencarian.
-*   **FR-04 (Kirim Proposal)**: Sistem harus memungkinkan mahasiswa mengajukan lamaran proyek dengan menyertakan pendekatan kerja (cover letter), estimasi hari, penawaran harga, serta melampirkan berkas (PDF, DOC, DOCX, JPG, PNG) atau portofolio relevan.
-*   **FR-05 (Jalur Belajar)**: Sistem harus menampilkan rekomendasi kursus MOOC jika mahasiswa ingin meningkatkan keterampilan tertentu.
-*   **FR-06 (Portofolio Otomatis)**: Sistem harus menyusun portofolio mahasiswa secara otomatis berdasarkan histori proyek yang berhasil diselesaikan di platform.
+| ID | Kebutuhan | Deskripsi | Prioritas |
+|:---:|---|---|:---:|
+| **FR-01** | Registrasi Akun & Profil | Mengizinkan mahasiswa mendaftar akun dengan mengisi data universitas, jurusan, semester, skills, dan jam kerja mingguan. | High |
+| **FR-02** | Asesmen Kuis Kesiapan | Menyajikan kuis kesiapan (5 pertanyaan studi kasus) dan menghitung nilai kesiapan kerja otomatis (skor 0-100%). | High |
+| **FR-03** | Pencarian & Filter Proyek | Menelusuri daftar lowongan proyek aktif (*gigs*) dengan fitur pencarian kata kunci dan filter kategori industri. | High |
+| **FR-04** | Pengiriman Proposal Lamaran | Mengajukan proposal lamaran kerja dengan cover letter, nominal bid, estimasi waktu, serta lampiran berkas (PDF/DOC/DOCX/Gambar) dan histori proyek. | High |
+| **FR-05** | Akses Jalur Belajar MOOC | Menyajikan daftar rekomendasi kursus MOOC terkurasi (Coursera, Dicoding, Udemy) untuk meningkatkan kompetensi keahlian yang kurang. | Medium |
+| **FR-06** | Portofolio Terintegrasi Otomatis | Menyusun entri portofolio mahasiswa secara otomatis setelah proyek disetujui selesai oleh klien UMKM. | High |
 
 #### 4.1.2 Kebutuhan Pemilik UMKM
-*   **FR-07 (Registrasi Bisnis)**: Sistem harus memungkinkan UMKM mendaftarkan data profil usaha dan mengunggah dokumen KTP/NIB untuk verifikasi.
-*   **FR-08 (Posting Proyek)**: Sistem harus memfasilitasi pembuatan posting proyek dengan fitur *live preview* sebelum proyek diterbitkan.
-*   **FR-09 (Tinjau Pelamar & Seleksi)**: Sistem harus menyajikan daftar pelamar proposal yang masuk beserta visualisasi persentase kecocokan kriteria (SPK).
-*   **FR-10 (Ruang Kerja Kolaborasi)**: Sistem harus menyediakan workspace bersama untuk memantau progres checklist milestone, mengakses chat real-time, dan mengunduh kontrak SPK digital.
+| ID | Kebutuhan | Deskripsi | Prioritas |
+|:---:|---|---|:---:|
+| **FR-07** | Registrasi & Verifikasi Dokumen | Mengizinkan UMKM mendaftarkan data usaha, melengkapi lokasi, dan mengunggah berkas legalitas (KTP/NIB) untuk verifikasi admin. | High |
+| **FR-08** | Pembuatan Brief Proyek & Preview | Mengisi formulir pembuatan lowongan kerja baru yang dilengkapi dengan panel visualisasi pratinjau langsung (*live preview*). | Medium |
+| **FR-09** | Manajemen & Seleksi Pelamar | Meninjau proposal masuk serta memanfaatkan fitur Smart Recommendation Match (SPK) untuk menilai kecocokan pelamar. | High |
+| **FR-10** | Ruang Kerja Kolaboratif | Memantau pengerjaan proyek via checklist milestone, mengunduh kontrak SPK digital, dan bertukar pesan chat real-time. | High |
 
 ### 4.2 Kebutuhan Non-Fungsional
-*   **NFR-01 (Performance)**: Halaman aplikasi harus memuat data dalam waktu kurang dari 2 detik pada koneksi internet standar (3G/4G).
-*   **NFR-02 (Security)**: Data rahasia kredensial database disimpan secara terenkripsi menggunakan modul Supabase JWT dan tidak boleh diunggah ke repositori publik (dikontrol via `.gitignore`). Aturan keamanan tabel menggunakan PostgreSQL Row Level Security (RLS).
-*   **NFR-03 (Usability)**: Antarmuka harus dirancang secara mobile-responsive agar nyaman digunakan baik dari layar desktop maupun layar smartphone beresolusi minimal 360px.
+| ID | Kategori | Kebutuhan Deskripsi |
+|:---:|:---:|---|
+| **NFR-01** | Performance | Halaman web harus memuat data dalam waktu kurang dari 2 detik pada koneksi internet seluler standar (3G/4G). |
+| **NFR-02** | Security | Hak akses data dikontrol menggunakan policy Row Level Security (RLS) PostgreSQL, dan kredensial database dilindungi dalam `.env` Vercel. |
+| **NFR-03** | Usability | Tata letak antarmuka responsif (Bento Grid) yang beradaptasi secara otomatis pada layar smartphone (min. 360px). |
 
 ---
 
