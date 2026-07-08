@@ -969,6 +969,29 @@ graph TD
 #### 9.2.1 Wireframe & Mockup Halaman Utama
 Mockup UI didesain bersih, modern, dan didominasi warna biru profesional `#005bbf` (mahasiswa) serta hijau bisnis `#006e2c` (UMKM). Layout menggunakan grid modular (Bento Box) yang responsif terhadap perubahan resolusi layar.
 
+#### 9.2.2 Desain User Interface (Tampilan Implementasi Akhir)
+Berikut adalah daftar tangkapan layar (*screenshot*) implementasi desain antarmuka aplikasi web SkillGate yang responsif dan mengikuti standar estetika modern:
+
+1. **Dashboard Bento Mahasiswa (`/dashboard/student`)**:  
+   Menyajikan visualisasi ringkas mengenai grafik pendapatan, total jam kerja mingguan, proyek aktif berjalan, serta histori status pengerjaan secara terpusat menggunakan model bento-grid.  
+   ![Dashboard Bento Mahasiswa](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/student_dashboard_1782048058133.png)
+
+2. **Dashboard Bento UMKM (`/dashboard/umkm`)**:  
+   Pusat kendali pemberi kerja (UMKM) untuk melacak status verifikasi akun, jumlah proyek aktif terpublikasi, total anggaran belanja escrow, serta memantau daftar lamaran proposal masuk secara real-time.  
+   ![Dashboard Bento UMKM](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/umkm_dashboard_1782048085350.png)
+
+3. **Papan Pencarian Lowongan Proyek (`/gigs`)**:  
+   Halaman pencarian lowongan kerja mikro bagi mahasiswa pelamar digital, dilengkapi fitur filter klasifikasi kategori, penelusuran search bar, serta tampilan kartu proyek dengan indikator rating mitra UMKM.  
+   ![Papan Lowongan Kerja Gigs](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/gigs_board_1782048070772.png)
+
+4. **Halaman Pengiriman Proposal (`/gigs/[id]/proposal`)**:  
+   Formulir interaktif bagi mahasiswa pelamar untuk menyusun cover letter penawaran harga (*bid*), estimasi waktu durasi pengerjaan, highlight histori proyek terbaik, serta unggahan lampiran dokumen PDF.  
+   ![Formulir Proposal](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/proposal_form_1782048078333.png)
+
+5. **Halaman Portofolio Akademik & AI Resume (`/student/portfolio`)**:  
+   Tampilan portofolio kelulusan terverifikasi yang memuat statistik kerja riil, ulasan bintang dan testimoni asli dari klien UMKM, serta asisten AI Gemini penyusun draf CV karir profesional.  
+   ![Portofolio & Asisten AI](file:///c:/Data%20Pribadi/Kuliah/Semester%204/Pengembangan%20Sistem%20Informasi/SkillGate/portfolio_page_loaded_1781911246599.png)
+
 ### 9.3 API Design
 Sistem berinteraksi langsung dengan database Supabase PostgreSQL menggunakan modul klien JavaScript (`@supabase/supabase-js`) yang memanfaatkan enkripsi JWT.
 
