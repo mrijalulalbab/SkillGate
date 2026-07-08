@@ -40,41 +40,66 @@ Sistem informasi SkillGate mengintegrasikan berbagai modul fungsional canggih:
 
 ---
 
-## 💻 Panduan Menjalankan Proyek Secara Lokal
+## 💻 Petunjuk Teknis & Panduan Instalasi Sistem
 
-Ikuti langkah-langkah berikut untuk menjalankan prototipe pengembangan di komputer lokal Anda:
+Ikuti panduan terstruktur di bawah ini untuk mereplikasi dan menjalankan aplikasi SkillGate secara lokal dari awal:
 
-### 1. Prasyarat (*Prerequisites*)
-Pastikan Anda sudah menginstal:
-* [Node.js](https://nodejs.org/) v20 atau versi di atasnya.
-* [Git](https://git-scm.com/).
+### 1. Prasyarat Sistem (*Prerequisites*)
+Pastikan komputer Anda sudah terinstal:
+*   [Node.js](https://nodejs.org/) (Sangat direkomendasikan versi LTS v20.x atau di atasnya).
+*   [Git](https://git-scm.com/) (Untuk manajemen repositori).
+*   Akun gratis di platform [Supabase Cloud](https://supabase.com/) dan [Google AI Studio](https://aistudio.google.com/) (untuk mendapatkan kunci akses Gemini API).
 
-### 2. Kloning Repositori
+### 2. Kloning & Instalasi Dependensi
+Jalankan perintah berikut di terminal/command prompt:
 ```bash
+# 1. Kloning repositori GitHub
 git clone https://github.com/mrijalulalbab/SkillGate.git
-cd SkillGate
-```
 
-### 3. Instalasi Dependensi
-Instal semua modul pustaka yang dibutuhkan:
-```bash
+# 2. Masuk ke direktori proyek
+cd SkillGate
+
+# 3. Instalasi seluruh paket pustaka (dependencies)
 npm install
 ```
 
-### 4. Konfigurasi Variabel Lingkungan (*Environment Variables*)
-Buat berkas bernama `.env.local` di direktori utama proyek, lalu isi kredensial Supabase & API Gemini Anda:
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-GEMINI_API_KEY=your-gemini-api-key
-```
+### 3. Inisialisasi Database (Supabase PostgreSQL)
+Aplikasi ini bergantung pada database relasional Supabase. Lakukan langkah berikut untuk menginisialisasi skema tabel:
+1.  Buka dashboard [Supabase](https://supabase.com/) dan buat proyek baru (*Create New Project*).
+2.  Setelah proyek siap, masuk ke menu **SQL Editor** pada menu sidebar kiri dashboard Supabase.
+3.  Klik **New Query**, kemudian buka berkas skema fisik database lokal Anda di:  
+    `supabase/migrations/20260619234322_init_schema.sql`
+4.  Salin seluruh kode DDL SQL di dalam berkas tersebut, lalu tempel (*paste*) ke dalam SQL Editor Supabase Dashboard, kemudian klik **Run**.
+    > [!NOTE]
+    > Langkah ini secara otomatis membuat semua tabel (`users`, `student_profiles`, `umkm_profiles`, `gigs`, `applications`, `messages`, `reviews`, `notifications`), relasi referensial, custom triggers, fungsi, serta kebijakan Row Level Security (RLS).
 
-### 5. Jalankan Server Pengembangan
-Aktifkan server lokal Next.js:
+### 4. Konfigurasi Autentikasi (Bypass Verifikasi Email)
+Secara bawaan, Supabase mewajibkan verifikasi email nyata untuk pendaftaran akun baru. Agar Anda mudah melakukan demo pendaftaran mahasiswa dan UMKM baru tanpa perlu memverifikasi kotak masuk email:
+1.  Buka dashboard Supabase Anda.
+2.  Buka menu **Project Settings ➔ Authentication** (atau menu **Authentication ➔ Providers**).
+3.  Di bawah bagian **Email Provider**, cari opsi **Confirm email**, lalu matikan (*disable*) toggle tersebut.
+4.  Klik **Save** untuk menyimpan perubahan.
+
+### 5. Konfigurasi Variabel Lingkungan (`.env.local`)
+1.  Buat berkas baru bernama **`.env.local`** di direktori utama proyek (*workspace root*).
+2.  Salin variabel berikut dan masukkan kredensial proyek Supabase serta Google Gemini API Anda:
+    ```env
+    # URL database Supabase Anda (Bisa disalin dari Settings -> API di Dashboard Supabase)
+    NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+    
+    # API Anon Key Supabase Anda
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+    
+    # Kunci API Google Gemini (Bisa didapatkan dari Google AI Studio)
+    GEMINI_API_KEY=your-gemini-api-key
+    ```
+
+### 6. Menjalankan Server Aplikasi
+Setelah konfigurasi selesai, jalankan server pengembangan Next.js lokal:
 ```bash
 npm run dev
 ```
-Buka browser Anda dan akses: **`http://localhost:3000`**
+Setelah siap, buka browser web Anda dan akses: **`http://localhost:3000`**
 
 ---
 
