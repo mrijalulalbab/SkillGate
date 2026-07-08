@@ -1002,6 +1002,42 @@ Sistem berinteraksi langsung dengan database Supabase PostgreSQL menggunakan mod
 | **POST** | `/api/proposals`| Mengirimkan proposal baru | `{ gig_id, cover_letter, bid_amount }` | `Status: 201 Created` |
 | **POST** | `/api/ai-summary` | Membuat ringkasan resume AI | `{ student_id }` | `{"summary": "text"}` |
 
+#### 9.3.2 Dokumentasi API (API Documentation)
+Sistem informasi SkillGate menggunakan dua jenis arsitektur API yang saling melengkapi untuk interaksi data:
+
+1. **Auto-Generated REST API (PostgREST dari Supabase)**:
+   - Supabase secara otomatis menghasilkan endpoint RESTful berbasis skema tabel PostgreSQL (`public.*`) yang didefinisikan pada database.
+   - Keamanan: Setiap request wajib menyertakan header `apikey` (anon key) dan header `Authorization` berisi token JWT (`Bearer <TOKEN>`) milik pengguna yang sedang login untuk memicu validasi kebijakan keamanan tingkat baris (RLS).
+   - **Contoh Request Pembacaan Lowongan Gigs**:
+     ```http
+     GET /rest/v1/gigs?status=eq.open HTTP/1.1
+     Host: your-project-ref.supabase.co
+     apikey: YOUR_ANON_KEY
+     Authorization: Bearer YOUR_USER_JWT
+     ```
+
+2. **Custom API Routes (Next.js Route Handlers)**:
+   - Digunakan untuk operasi asinkron yang membutuhkan proses komputasi serverless terisolasi (seperti integrasi dengan API pihak ketiga Google Gemini).
+   - **Endpoint**: `POST /api/generate-summary` (Modul Generator Portofolio AI)
+     - *Request Payload (JSON)*:
+       ```json
+       {
+         "name": "Anto",
+         "skills": ["Canva", "Adobe Photoshop"],
+         "readinessScore": 82,
+         "totalProjects": 3,
+         "avgRating": 4.7
+       }
+       ```
+     - *Response Output (JSON)*:
+       ```json
+       {
+         "summary": "Anto adalah mahasiswa Teknik Informatika Universitas Islam Indonesia yang memiliki kompetensi kuat di bidang Canva dan Adobe Photoshop..."
+       }
+       ```
+
+Dokumentasi API lengkap yang terintegrasi secara otomatis dengan skema fisik tabel database dapat diakses oleh tim pengembang melalui dashboard dokumentasi resmi proyek di: **`https://supabase.com/dashboard/project/_/api`**
+
 ---
 
 ## 10. IMPLEMENTASI DAN TESTING
