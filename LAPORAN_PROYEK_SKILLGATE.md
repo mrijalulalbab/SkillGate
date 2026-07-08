@@ -1,9 +1,5 @@
-# TEMPLATE LAPORAN PROYEK TUGAS BESAR
-# MATA KULIAH PENGEMBANGAN SISTEM INFORMASI
-
-## HALAMAN JUDUL
-### LAPORAN PROYEK TUGAS BESAR PENGEMBANGAN SISTEM INFORMASI
-**SKILLGATE: Ekosistem Digital Kampus-ke-Freelance untuk Mahasiswa dan UMKM Lokal**
+# LAPORAN PROYEK TUGAS BESAR PENGEMBANGAN SISTEM INFORMASI
+## SKILLGATE: Ekosistem Digital Kampus-ke-Freelance untuk Mahasiswa dan UMKM Lokal
 
 **Disusun oleh:**
 *   Muhammad Rijalul Albab (NIM: 24523001) - Project Lead
