@@ -7,12 +7,12 @@
 
 **Disusun oleh:**
 *   Muhammad Rijalul Albab (NIM: 24523001) - Project Lead
-*   Rifqi (NIM: 24523002) - UI/UX Designer
-*   Yusuf (NIM: 24523003) - Research & Validation Lead
+*   Rifqi Aunnur Rohman (NIM: 24523063) - UI/UX Designer
+*   Muhammad Farhan Yusuf Azizi (NIM: 24523003) - Research & Validation Lead
 *   Jawara (NIM: 24523004) - Content & Community Strategist
-*   Naila (NIM: 24523005) - Digital Prototyper
+*   Naila Reyhantyas Nurkhalisha (NIM: 24523050) - Digital Prototyper
 
-**No. Kelompok:** 4  
+**No. Kelompok:** 2  
 **Nama Kelompok:** Nexus  
 **Kelas:** E  
 **Link Github:** https://github.com/mrijalulalbab/SkillGate.git  
