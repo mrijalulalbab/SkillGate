@@ -577,7 +577,192 @@ Sistem informasi SkillGate didukung oleh basis data relasional PostgreSQL dengan
 *   **One-to-One / One-to-Many (1:N) Gigs ke Reviews**:
     - Ulasan hasil kerja terikat pada proyek via `reviews.gig_id`. Constraint `UNIQUE(gig_id, reviewer_id)` diterapkan agar ulasan hanya dapat diberikan sekali per pihak yang terlibat.
 
-### 7.4 Physical Data Model (Struktur Tabel DDL)
+### 7.4 Physical Data Model
+
+#### 7.4.1 Visualisasi Physical ERD (Skema Tabel & Kolom)
+Berikut adalah visualisasi ERD Fisik (*Physical Data Model*) yang menunjukkan detail kolom, tipe data, serta *Primary Key* (PK) dan *Foreign Key* (FK) yang terintegrasi pada sistem SkillGate:
+
+```mermaid
+erDiagram
+    users {
+        uuid id PK
+        text role
+        text full_name
+        text phone
+        text avatar_url
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    student_profiles {
+        uuid id PK
+        uuid user_id FK "UNIQUE"
+        text nim
+        text university
+        text major
+        int semester
+        text_array skills
+        int readiness_score
+        numeric rating_avg
+        int projects_completed
+        numeric total_earned
+    }
+    umkm_profiles {
+        uuid id PK
+        uuid user_id FK "UNIQUE"
+        text business_name
+        text category
+        text address
+        text description
+        text website
+        numeric rating_avg
+        numeric total_spent
+        int projects_posted
+    }
+    gigs {
+        uuid id PK
+        uuid umkm_id FK
+        text title
+        text description
+        text category
+        text_array skills_required
+        text output_expected
+        numeric budget
+        date deadline
+        text status
+        int progress_percent
+        uuid accepted_student_id FK
+    }
+    applications {
+        uuid id PK
+        uuid gig_id FK
+        uuid student_id FK
+        text cover_letter
+        int timeline_days
+        numeric bid_amount
+        text_array attachment_urls
+        text status
+    }
+    messages {
+        uuid id PK
+        uuid gig_id FK
+        uuid sender_id FK
+        uuid receiver_id FK
+        text content
+        boolean is_read
+        timestamptz created_at
+    }
+    reviews {
+        uuid id PK
+        uuid gig_id FK
+        uuid reviewer_id FK
+        uuid reviewee_id FK
+        int rating
+        text comment
+    }
+
+    users ||--o| student_profiles : "has"
+    users ||--o| umkm_profiles : "has"
+    users ||--o{ gigs : "posts"
+    users ||--o{ applications : "submits"
+    gigs ||--o{ applications : "receives"
+    gigs ||--o{ messages : "relates_to"
+    users ||--o{ messages : "sends"
+    gigs ||--o{ reviews : "rated_by"
+```
+
+<details>
+<summary><b>Salin Kode Mermaid Physical ERD</b></summary>
+
+```text
+erDiagram
+    users {
+        uuid id PK
+        text role
+        text full_name
+        text phone
+        text avatar_url
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    student_profiles {
+        uuid id PK
+        uuid user_id FK "UNIQUE"
+        text nim
+        text university
+        text major
+        int semester
+        text_array skills
+        int readiness_score
+        numeric rating_avg
+        int projects_completed
+        numeric total_earned
+    }
+    umkm_profiles {
+        uuid id PK
+        uuid user_id FK "UNIQUE"
+        text business_name
+        text category
+        text address
+        text description
+        text website
+        numeric rating_avg
+        numeric total_spent
+        int projects_posted
+    }
+    gigs {
+        uuid id PK
+        uuid umkm_id FK
+        text title
+        text description
+        text category
+        text_array skills_required
+        text output_expected
+        numeric budget
+        date deadline
+        text status
+        int progress_percent
+        uuid accepted_student_id FK
+    }
+    applications {
+        uuid id PK
+        uuid gig_id FK
+        uuid student_id FK
+        text cover_letter
+        int timeline_days
+        numeric bid_amount
+        text_array attachment_urls
+        text status
+    }
+    messages {
+        uuid id PK
+        uuid gig_id FK
+        uuid sender_id FK
+        uuid receiver_id FK
+        text content
+        boolean is_read
+        timestamptz created_at
+    }
+    reviews {
+        uuid id PK
+        uuid gig_id FK
+        uuid reviewer_id FK
+        uuid reviewee_id FK
+        int rating
+        text comment
+    }
+
+    users ||--o| student_profiles : "has"
+    users ||--o| umkm_profiles : "has"
+    users ||--o{ gigs : "posts"
+    users ||--o{ applications : "submits"
+    gigs ||--o{ applications : "receives"
+    gigs ||--o{ messages : "relates_to"
+    users ||--o{ messages : "sends"
+    gigs ||--o{ reviews : "rated_by"
+```
+</details>
+
+#### 7.4.2 Struktur Tabel DDL SQL
 Skema fisik diimplementasikan menggunakan perintah DDL SQL sebagai berikut:
 
 ```sql
