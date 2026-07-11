@@ -69,6 +69,8 @@ export default function StudentDashboardPage() {
   const [activeGigs, setActiveGigs] = useState<ActiveGig[]>([]);
   const [recommendedGigs, setRecommendedGigs] = useState<RecommendedGig[]>([]);
   const [latestReviews, setLatestReviews] = useState<Review[]>([]);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [totalEarnedSum, setTotalEarnedSum] = useState(0);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string>("");
 
@@ -106,6 +108,19 @@ export default function StudentDashboardPage() {
       
       if (profileData) {
         setProfile(profileData as StudentProfile);
+      }
+
+      // Fetch completed gigs dynamically to guarantee sync with portfolio and projects sections
+      const { data: completedData } = await supabase
+        .from("gigs")
+        .select("budget")
+        .eq("accepted_student_id", user.id)
+        .eq("status", "completed");
+
+      if (completedData) {
+        setCompletedCount(completedData.length);
+        const sum = completedData.reduce((acc, curr) => acc + (Number(curr.budget) || 0), 0);
+        setTotalEarnedSum(sum);
       }
 
       // Fetch active gigs (where student is accepted)
@@ -171,9 +186,9 @@ export default function StudentDashboardPage() {
 
   const stats = {
     activeProjects: activeGigs.length,
-    completedProjects: profile?.projects_completed ?? MOCK.completedProjects,
+    completedProjects: completedCount,
     readinessScore: profile?.readiness_score ?? MOCK.readinessScore,
-    totalEarned: profile?.total_earned ?? MOCK.totalEarned,
+    totalEarned: totalEarnedSum,
   };
 
   const calculateProjectMatch = (gigSkills: string[]) => {
