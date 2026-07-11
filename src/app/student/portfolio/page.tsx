@@ -33,6 +33,8 @@ export default function PortfolioPage() {
   const [major, setMajor] = useState("Teknik Informatika");
   const [readinessScore, setReadinessScore] = useState(75);
   const [skills, setSkills] = useState<string[]>([]);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [loadingProfile, setLoadingProfile] = useState(true);
 
   useEffect(() => {
@@ -41,16 +43,18 @@ export default function PortfolioPage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
         setUserId(user.id);
+        setEmail(user.email || "");
 
-        // Fetch user full_name
+        // Fetch user full_name and phone
         const { data: userProfile } = await supabase
           .from("users")
-          .select("full_name")
+          .select("full_name, phone")
           .eq("id", user.id)
           .single();
           
         const nameToShow = userProfile?.full_name || "Mahasiswa";
         setStudentName(nameToShow);
+        setPhone(userProfile?.phone || "");
 
         // Fetch student profile details
         const { data: student } = await supabase
@@ -251,7 +255,7 @@ export default function PortfolioPage() {
 
   return (
     <StudentLayout>
-      <div className="max-w-[1280px] mx-auto px-4 md:px-8 py-8 md:py-12 flex flex-col gap-10">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-8 py-8 md:py-12 flex flex-col gap-10 print:hidden">
         
         {/* Hero / Header */}
         <section>
@@ -653,7 +657,7 @@ export default function PortfolioPage() {
         <style dangerouslySetInnerHTML={{__html: `
           @media print {
             /* Sembunyikan bagian non-printable */
-            header, aside, footer, nav, button, .print\\:hidden {
+            header, aside, footer, nav, button, .print\\:hidden, #__next-prerender-error {
               display: none !important;
             }
             /* Reset layout scroll container Next.js */
@@ -661,6 +665,8 @@ export default function PortfolioPage() {
               height: auto !important;
               overflow: visible !important;
               position: static !important;
+              background: white !important;
+              color: black !important;
             }
             /* Hapus background warna mencolok atau bayangan */
             .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
@@ -670,10 +676,90 @@ export default function PortfolioPage() {
             /* Format kertas A4 */
             @page {
               size: A4;
-              margin: 15mm 15mm 15mm 15mm;
+              margin: 10mm 15mm 10mm 15mm;
             }
           }
         `}} />
+
+      </div>
+
+      {/* ======================================================== */}
+      {/* 2. ATS CV LAYOUT (CETAK KHUSUS - HANYA MUNCUL DI PRINT)   */}
+      {/* ======================================================== */}
+      <div className="hidden print:block print:w-full print:text-black print:bg-white font-serif text-[10px] leading-relaxed p-0 m-0 max-w-4xl mx-auto">
+        
+        {/* CV Header */}
+        <div className="text-center border-b-2 border-slate-900 pb-2 mb-3.5">
+          <h1 className="text-lg font-bold uppercase tracking-wider mb-0.5">{studentName}</h1>
+          <p className="text-[9px] text-slate-700 font-medium">
+            Program Studi {major} | {university}
+          </p>
+          <div className="text-[9px] text-slate-600 flex justify-center gap-1.5 mt-1">
+            <span>Email: {email}</span>
+            <span>•</span>
+            <span>Telp: {phone || "+62 812-3456-7890"}</span>
+            <span>•</span>
+            <span>Yogyakarta, Indonesia</span>
+            <span>•</span>
+            <span>NIM: 22523001</span>
+          </div>
+        </div>
+
+        {/* Professional Summary */}
+        <div className="mb-3.5">
+          <h2 className="text-[10px] font-bold uppercase tracking-widest border-b border-slate-700 pb-0.5 mb-1.5">Ringkasan Karir</h2>
+          <p className="text-justify text-slate-800">
+            {aiSummary || `Mahasiswa program studi ${major} ${university} dengan kesiapan kerja (Readiness Score) mencapai ${readinessScore}%. Memiliki rekam jejak penyelesaian proyek nyata yang sukses dalam bidang ${skills.join(", ") || "teknologi dan kreatif"} melalui platform SkillGate. Menunjukkan keterampilan praktis tinggi dengan rating rata-rata ${stats.avgRating}/5.0 dari ulasan mitra UMKM Sleman.`}
+          </p>
+        </div>
+
+        {/* Education */}
+        <div className="mb-3.5">
+          <h2 className="text-[10px] font-bold uppercase tracking-widest border-b border-slate-700 pb-0.5 mb-1.5">Pendidikan</h2>
+          <div className="flex justify-between font-bold text-slate-900">
+            <span>{university}</span>
+            <span>2024 - Sekarang</span>
+          </div>
+          <div className="flex justify-between text-slate-700 italic">
+            <span>Sarjana Komputer (S.Kom) - Program Studi {major}</span>
+            <span>IPK: 3.75 / 4.00 (Semester 4)</span>
+          </div>
+        </div>
+
+        {/* Skills */}
+        <div className="mb-3.5">
+          <h2 className="text-[10px] font-bold uppercase tracking-widest border-b border-slate-700 pb-0.5 mb-1.5">Keahlian & Kompetensi</h2>
+          <p className="text-slate-800">
+            <strong>Keahlian Utama:</strong> {skills.join(", ") || "Desain Grafis, UI/UX, Manajemen Media Sosial, Administrasi Data"}
+          </p>
+          <p className="text-slate-800 mt-1">
+            <strong>Kompetensi Tambahan:</strong> Asesmen Kesiapan Kerja (Skor: {readinessScore}%), Komunikasi Bisnis Digital, Kolaborasi Tim, Evaluasi Kinerja Klien.
+          </p>
+        </div>
+
+        {/* Experience / Projects */}
+        <div className="mb-2">
+          <h2 className="text-[10px] font-bold uppercase tracking-widest border-b border-slate-700 pb-0.5 mb-1.5">Pengalaman Proyek Terverifikasi (SkillGate)</h2>
+          <div className="space-y-3">
+            {portfolioEntries.map((entry) => (
+              <div key={entry.id} className="text-slate-800">
+                <div className="flex justify-between font-bold text-slate-900">
+                  <span>{entry.title} — {entry.client} (Klien UMKM)</span>
+                  <span>{entry.completedDate}</span>
+                </div>
+                <div className="text-[9px] text-slate-600 font-medium italic">
+                  Peran: Freelancer Mahasiswa | Anggaran Kontrak: {entry.budget} | Rating: {entry.rating}.0 / 5.0
+                </div>
+                <p className="mt-0.5 text-slate-700">
+                  <strong>Output yang Diserahkan:</strong> {entry.deliverables.join(", ")}
+                </p>
+                <p className="text-[9px] text-slate-500 italic mt-0.5">
+                  Feedback UMKM: "{entry.testimonial}"
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
 
       </div>
     </StudentLayout>
