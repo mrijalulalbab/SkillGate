@@ -15,10 +15,10 @@ export default function PortfolioPage() {
   const [portfolioEntries, setPortfolioEntries] = useState<any[]>([]);
   const [selectedEntry, setSelectedEntry] = useState<any | null>(null);
   const [stats, setStats] = useState({
-    totalProjects: 3,
-    totalEarnings: "Rp 450.000",
-    avgRating: 4.7,
-    totalClients: 3,
+    totalProjects: 0,
+    totalEarnings: "Rp 0",
+    avgRating: 0,
+    totalClients: 0,
   });
   const [aiSummary, setAiSummary] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -70,14 +70,26 @@ export default function PortfolioPage() {
         const { data: completedGigs, error: gigsError } = await supabase
           .from("gigs")
           .select(`
-            id, title, category, budget, skills_required, updated_at, output_expected, umkm_id,
-            reviews ( rating, comment )
+            id, title, category, budget, skills_required, updated_at, output_expected, umkm_id
           `)
           .eq("accepted_student_id", user.id)
           .eq("status", "completed");
 
         if (gigsError) {
           console.error("Error fetching completed gigs:", gigsError);
+        }
+
+        // Fetch reviews where this student is the reviewee (separate query to avoid nested join issues)
+        const { data: studentReviews } = await supabase
+          .from("reviews")
+          .select("gig_id, rating, comment")
+          .eq("reviewee_id", user.id);
+
+        const reviewsByGig: Record<string, { rating: number; comment: string }> = {};
+        if (studentReviews) {
+          for (const r of studentReviews) {
+            reviewsByGig[r.gig_id] = { rating: r.rating, comment: r.comment };
+          }
         }
 
         if (completedGigs && completedGigs.length > 0) {
@@ -111,7 +123,7 @@ export default function PortfolioPage() {
             const clientName = umkmNameMap[gig.umkm_id] || "UMKM";
             clientsSet.add(clientName);
 
-            const review = gig.reviews && gig.reviews.length > 0 ? gig.reviews[0] : null;
+            const review = reviewsByGig[gig.id] || null;
             const ratingVal = review ? Number(review.rating) || 5 : 5;
             const commentVal = review ? review.comment || "Selesai tepat waktu dengan hasil memuaskan." : "Selesai dengan hasil memuaskan.";
 

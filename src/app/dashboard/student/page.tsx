@@ -45,9 +45,9 @@ interface Review {
 const MOCK = {
   name: "Andi",
   activeProjects: 1,
-  completedProjects: 4,
+  completedProjects: 3,
   readinessScore: 78,
-  totalEarned: 850000,
+  totalEarned: 750000,
 };
 
 function formatRupiah(amount: number): string {
