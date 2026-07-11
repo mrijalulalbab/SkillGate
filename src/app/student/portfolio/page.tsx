@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { useToast } from "@/components/ui/toast-notification";
 
 export default function PortfolioPage() {
   const [portfolioEntries, setPortfolioEntries] = useState<any[]>([]);
@@ -24,6 +25,8 @@ export default function PortfolioPage() {
   const [generating, setGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   const [studentName, setStudentName] = useState("Mahasiswa");
   const [university, setUniversity] = useState("Universitas Islam Indonesia");
@@ -37,6 +40,7 @@ export default function PortfolioPage() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
+        setUserId(user.id);
 
         // Fetch user full_name
         const { data: userProfile } = await supabase
@@ -208,6 +212,43 @@ export default function PortfolioPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleSharePortfolio = () => {
+    if (!userId) {
+      showToast("Gagal memuat profil pengenal user. Silakan coba lagi.", "error");
+      return;
+    }
+    const shareUrl = `${window.location.origin}/profile/${userId}`;
+    navigator.clipboard.writeText(shareUrl);
+    showToast("Tautan portofolio publik Anda berhasil disalin ke clipboard!", "success");
+  };
+
+  const handleDownloadPDF = () => {
+    showToast("Mempersiapkan layout cetak PDF...", "info");
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+
+  const handleShareEntry = (entry: any) => {
+    if (!entry) return;
+    const shareUrl = `${window.location.origin}/profile/${userId}?entry=${entry.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    showToast(`Tautan karya "${entry.title}" berhasil disalin ke clipboard!`, "success");
+  };
+
+  const handleOpenDeliverable = (entry: any) => {
+    if (!entry || !entry.deliverables || entry.deliverables.length === 0) {
+      showToast("Tidak ada tautan berkas terlampir untuk karya ini.", "error");
+      return;
+    }
+    const url = entry.deliverables[0];
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      window.open(url, "_blank");
+    } else {
+      showToast(`Berkas penyerahan: ${url}`, "info");
+    }
+  };
+
   return (
     <StudentLayout>
       <div className="max-w-[1280px] mx-auto px-4 md:px-8 py-8 md:py-12 flex flex-col gap-10">
@@ -231,11 +272,19 @@ export default function PortfolioPage() {
                 </p>
               </div>
               
-              <div className="flex gap-3 shrink-0">
-                <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white font-semibold">
+              <div className="flex gap-3 shrink-0 print:hidden">
+                <Button 
+                  onClick={handleSharePortfolio}
+                  variant="outline" 
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white font-semibold"
+                >
                   <Share2 className="w-4 h-4 mr-2" /> Bagikan
                 </Button>
-                <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white font-semibold">
+                <Button 
+                  onClick={handleDownloadPDF}
+                  variant="outline" 
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white font-semibold"
+                >
                   <Download className="w-4 h-4 mr-2" /> Unduh PDF
                 </Button>
               </div>
@@ -547,11 +596,19 @@ export default function PortfolioPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-3 pt-2">
-                  <Button variant="outline" className="flex-1 font-semibold">
+                <div className="flex gap-3 pt-2 print:hidden">
+                  <Button 
+                    onClick={() => handleShareEntry(selectedEntry)}
+                    variant="outline" 
+                    className="flex-1 font-semibold"
+                  >
                     <Share2 className="w-4 h-4 mr-2" /> Bagikan Karya Ini
                   </Button>
-                  <Button variant="outline" className="flex-1 font-semibold">
+                  <Button 
+                    onClick={() => handleOpenDeliverable(selectedEntry)}
+                    variant="outline" 
+                    className="flex-1 font-semibold"
+                  >
                     <ExternalLink className="w-4 h-4 mr-2" /> Buka Link Publik
                   </Button>
                 </div>
@@ -561,7 +618,7 @@ export default function PortfolioPage() {
         )}
 
         {/* CTA for more projects */}
-        <section className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-border/40 text-center">
+        <section className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-border/40 text-center print:hidden">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5">
             <TrendingUp className="w-8 h-8 text-primary" />
           </div>
@@ -575,6 +632,32 @@ export default function PortfolioPage() {
             </Button>
           </Link>
         </section>
+
+        {/* CSS override khusus untuk Cetak PDF */}
+        <style dangerouslySetInnerHTML={{__html: `
+          @media print {
+            /* Sembunyikan bagian non-printable */
+            header, aside, footer, nav, button, .print\\:hidden {
+              display: none !important;
+            }
+            /* Reset layout scroll container Next.js */
+            body, html, main, #__next, .h-screen, .overflow-hidden, .overflow-y-auto {
+              height: auto !important;
+              overflow: visible !important;
+              position: static !important;
+            }
+            /* Hapus background warna mencolok atau bayangan */
+            .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
+              box-shadow: none !important;
+              border: 1px solid #e2e8f0 !important;
+            }
+            /* Format kertas A4 */
+            @page {
+              size: A4;
+              margin: 15mm 15mm 15mm 15mm;
+            }
+          }
+        `}} />
 
       </div>
     </StudentLayout>
