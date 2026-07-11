@@ -259,23 +259,23 @@ export default function PortfolioPage() {
         
         {/* Hero / Header */}
         <section>
-          <div className="bg-[#0B0F19] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(110,68,255,0.15),rgba(255,255,255,0))] rounded-[32px] p-8 md:p-12 text-white relative overflow-hidden border border-slate-800">
+          <div className="bg-gradient-to-br from-primary via-[#5335db] to-[#6e44ff] rounded-[32px] p-8 md:p-12 text-white relative overflow-hidden shadow-lg shadow-primary/10">
             {/* Ambient background glows */}
-            <div className="absolute right-0 top-0 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-[#6e44ff]/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none" />
             
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 backdrop-blur-sm">
-                    <Award className="w-3.5 h-3.5 text-primary" />
+                  <div className="bg-white/15 text-white border border-white/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 backdrop-blur-sm">
+                    <Award className="w-3.5 h-3.5 text-white" />
                     Verified Scholar Portfolio
                   </div>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight text-white">
                   Portofolio {studentName}
                 </h1>
-                <p className="text-slate-400 text-base md:text-lg max-w-2xl font-normal leading-relaxed">
+                <p className="text-white/80 text-base md:text-lg max-w-2xl font-normal leading-relaxed">
                   Portofolio akademik dinamis yang divalidasi langsung oleh platform dari histori pengerjaan proyek nyata milik mitra UMKM Sleman.
                 </p>
               </div>
@@ -284,14 +284,14 @@ export default function PortfolioPage() {
                 <Button 
                   onClick={handleSharePortfolio}
                   variant="outline" 
-                  className="flex-1 md:flex-none bg-white/5 border-slate-800 text-slate-200 hover:bg-white/10 hover:text-white font-bold rounded-xl transition-all"
+                  className="flex-1 md:flex-none bg-white/10 border-white/20 text-white hover:bg-white/25 hover:text-white font-bold rounded-xl transition-all"
                 >
                   <Share2 className="w-4 h-4 mr-2" /> Bagikan
                 </Button>
                 <Button 
                   onClick={handleDownloadPDF}
                   variant="outline" 
-                  className="flex-1 md:flex-none bg-white/5 border-slate-800 text-slate-200 hover:bg-white/10 hover:text-white font-bold rounded-xl transition-all"
+                  className="flex-1 md:flex-none bg-white/10 border-white/20 text-white hover:bg-white/25 hover:text-white font-bold rounded-xl transition-all"
                 >
                   <Download className="w-4 h-4 mr-2" /> Cetak PDF / CV
                 </Button>
