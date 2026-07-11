@@ -255,37 +255,41 @@ export default function PortfolioPage() {
         
         {/* Hero / Header */}
         <section>
-          <div className="bg-gradient-to-br from-primary via-[#4a2fbf] to-[#6e44ff] rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
-            {/* Decorative circles */}
-            <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full" />
-            <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-white/5 rounded-full" />
+          <div className="bg-[#0B0F19] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(110,68,255,0.15),rgba(255,255,255,0))] rounded-[32px] p-8 md:p-12 text-white relative overflow-hidden border border-slate-800">
+            {/* Ambient background glows */}
+            <div className="absolute right-0 top-0 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-[#6e44ff]/10 rounded-full blur-[80px] pointer-events-none" />
             
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <Award className="w-6 h-6" />
-                  <span className="text-sm font-bold uppercase tracking-wider text-white/80">Portfolio Builder</span>
+                  <div className="bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 backdrop-blur-sm">
+                    <Award className="w-3.5 h-3.5 text-primary" />
+                    Verified Scholar Portfolio
+                  </div>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-bold mb-3">Portofolio {studentName}</h1>
-                <p className="text-white/80 text-lg max-w-xl">
-                  Portofolio ini dibuat otomatis dari proyek-proyek yang telah Anda selesaikan di SkillGate. Bagikan ke calon klien atau lampirkan di CV Anda.
+                <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+                  Portofolio {studentName}
+                </h1>
+                <p className="text-slate-400 text-base md:text-lg max-w-2xl font-normal leading-relaxed">
+                  Portofolio akademik dinamis yang divalidasi langsung oleh platform dari histori pengerjaan proyek nyata milik mitra UMKM Sleman.
                 </p>
               </div>
               
-              <div className="flex gap-3 shrink-0 print:hidden">
+              <div className="flex gap-3 shrink-0 print:hidden w-full md:w-auto">
                 <Button 
                   onClick={handleSharePortfolio}
                   variant="outline" 
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white font-semibold"
+                  className="flex-1 md:flex-none bg-white/5 border-slate-800 text-slate-200 hover:bg-white/10 hover:text-white font-bold rounded-xl transition-all"
                 >
                   <Share2 className="w-4 h-4 mr-2" /> Bagikan
                 </Button>
                 <Button 
                   onClick={handleDownloadPDF}
                   variant="outline" 
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white font-semibold"
+                  className="flex-1 md:flex-none bg-white/5 border-slate-800 text-slate-200 hover:bg-white/10 hover:text-white font-bold rounded-xl transition-all"
                 >
-                  <Download className="w-4 h-4 mr-2" /> Unduh PDF
+                  <Download className="w-4 h-4 mr-2" /> Cetak PDF / CV
                 </Button>
               </div>
             </div>
@@ -294,91 +298,101 @@ export default function PortfolioPage() {
 
         {/* Stats Row */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-border/40 text-center">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Briefcase className="w-6 h-6 text-primary" />
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-slate-200/50 shadow-[0_8px_30px_rgb(0,0,0,0.02)] text-center hover:-translate-y-1 hover:shadow-md hover:border-primary/20 transition-all duration-300 group">
+            <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3.5 group-hover:scale-110 transition-transform duration-300">
+              <Briefcase className="w-5 h-5" />
             </div>
-            <div className="text-3xl font-bold text-foreground">{stats.totalProjects}</div>
-            <div className="text-sm font-medium text-muted-foreground mt-1">Proyek Selesai</div>
+            <div className="text-3xl font-extrabold text-slate-900 tracking-tight">{stats.totalProjects}</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1.5">Proyek Selesai</div>
           </div>
-          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-border/40 text-center">
-            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <TrendingUp className="w-6 h-6 text-emerald-600" />
+          
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-slate-200/50 shadow-[0_8px_30px_rgb(0,0,0,0.02)] text-center hover:-translate-y-1 hover:shadow-md hover:border-emerald/20 transition-all duration-300 group">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3.5 group-hover:scale-110 transition-transform duration-300">
+              <TrendingUp className="w-5 h-5" />
             </div>
-            <div className="text-3xl font-bold text-foreground">{stats.totalEarnings}</div>
-            <div className="text-sm font-medium text-muted-foreground mt-1">Total Pendapatan</div>
+            <div className="text-3xl font-extrabold text-slate-900 tracking-tight">{stats.totalEarnings}</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1.5">Total Pendapatan</div>
           </div>
-          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-border/40 text-center">
-            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Star className="w-6 h-6 text-amber-500" />
+
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-slate-200/50 shadow-[0_8px_30px_rgb(0,0,0,0.02)] text-center hover:-translate-y-1 hover:shadow-md hover:border-amber/20 transition-all duration-300 group">
+            <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-3.5 group-hover:scale-110 transition-transform duration-300">
+              <Star className="w-5 h-5 fill-current" />
             </div>
-            <div className="text-3xl font-bold text-foreground">{stats.avgRating}</div>
-            <div className="text-sm font-medium text-muted-foreground mt-1">Rating Rata-rata</div>
+            <div className="text-3xl font-extrabold text-slate-900 tracking-tight">{stats.avgRating} <span className="text-sm font-medium text-slate-400">/ 5.0</span></div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1.5">Rating Kinerja</div>
           </div>
-          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-border/40 text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Globe className="w-6 h-6 text-blue-600" />
+
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-slate-200/50 shadow-[0_8px_30px_rgb(0,0,0,0.02)] text-center hover:-translate-y-1 hover:shadow-md hover:border-violet/20 transition-all duration-300 group">
+            <div className="w-12 h-12 bg-violet-50 text-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-3.5 group-hover:scale-110 transition-transform duration-300">
+              <Globe className="w-5 h-5" />
             </div>
-            <div className="text-3xl font-bold text-foreground">{stats.totalClients}</div>
-            <div className="text-sm font-medium text-muted-foreground mt-1">Klien Dilayani</div>
+            <div className="text-3xl font-extrabold text-slate-900 tracking-tight">{stats.totalClients}</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1.5">Klien UMKM</div>
           </div>
         </section>
 
         {/* AI Resume Summary Section */}
-        <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-border/40 relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-24 h-24 bg-primary/5 rounded-full blur-xl" />
+        <section className="bg-gradient-to-br from-white to-[#F9FAFB] rounded-[32px] p-6 md:p-8 border border-slate-200/80 shadow-[0_8px_30px_rgb(0,0,0,0.01)] relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-40 h-40 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
           
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 shadow-sm border border-primary/20">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                  Ringkasan Karir AI (AI Resume Summarizer)
-                  <span className="bg-primary/15 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Gemini Powered</span>
+                <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                  Ringkasan Asisten Karir AI
+                  <span className="bg-primary/10 text-primary text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider border border-primary/25">Gemini 1.5 Pro</span>
                 </h3>
-                <p className="text-sm text-muted-foreground">Merangkum otomatis kompetensi akademik dan rekam jejak kerja Anda untuk draf CV.</p>
+                <p className="text-sm text-slate-500 font-medium">Buat deskripsi profil profesional otomatis berdasarkan capaian kerja riil Anda di platform.</p>
               </div>
             </div>
             {!aiSummary && !generating && (
               <Button 
                 onClick={handleGenerateSummary}
-                className="font-bold flex items-center gap-2"
+                className="w-full lg:w-auto font-bold py-6 px-6 bg-gradient-to-r from-primary to-[#6e44ff] text-white hover:opacity-95 shadow-[0_4px_20px_rgba(74,47,191,0.2)] rounded-xl transition-all"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 mr-2" />
                 Buat Ringkasan AI
               </Button>
             )}
           </div>
 
           {generating && (
-            <div className="p-6 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              <p className="text-sm font-semibold text-slate-800">{loadingStep}</p>
-              <p className="text-xs text-muted-foreground">Sistem mengompilasi statistik kerja Anda di platform...</p>
+            <div className="p-8 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center text-center space-y-4">
+              <div className="relative flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                <Sparkles className="w-5 h-5 text-primary absolute animate-pulse" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800">{loadingStep}</p>
+                <p className="text-xs text-muted-foreground mt-1">Asisten AI Gemini sedang merangkum pencapaian portofolio Anda...</p>
+              </div>
             </div>
           )}
 
           {aiSummary && !generating && (
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 relative group/summary">
-              <p className="text-sm text-slate-700 leading-relaxed pr-10">{aiSummary}</p>
+            <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-6 relative group/summary transition-all duration-300 hover:border-primary/30">
+              <div className="border-l-4 border-primary pl-4 py-1.5">
+                <p className="text-sm text-slate-700 leading-relaxed font-medium pr-10">{aiSummary}</p>
+              </div>
               
-              <div className="absolute top-4 right-4 opacity-100 md:opacity-0 md:group-hover/summary:opacity-100 transition-opacity">
+              <div className="absolute top-6 right-6 opacity-100 md:opacity-0 md:group-hover/summary:opacity-100 transition-opacity">
                 <button
                   onClick={handleCopy}
-                  className="p-2 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 shadow-sm transition-colors text-muted-foreground hover:text-foreground"
+                  className="p-2.5 bg-white hover:bg-slate-50 rounded-xl border border-slate-200/80 shadow-sm transition-colors text-muted-foreground hover:text-foreground flex items-center justify-center"
                   title="Salin ke Clipboard"
                 >
                   {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
               
-              <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-200 text-xs text-muted-foreground">
-                <span>Siap disalin ke LinkedIn atau CV Anda.</span>
+              <div className="flex justify-between items-center mt-5 pt-4 border-t border-slate-200/60 text-xs font-semibold text-muted-foreground">
+                <span className="flex items-center gap-1">✨ Siap disalin ke LinkedIn, CV, atau profil lamaran Anda.</span>
                 <button 
                   onClick={handleGenerateSummary}
-                  className="text-primary hover:underline font-bold"
+                  className="text-primary hover:underline font-bold transition-all"
                 >
                   Regenerasi Ringkasan
                 </button>
@@ -391,8 +405,8 @@ export default function PortfolioPage() {
         <section>
           <div className="flex flex-wrap justify-between items-end gap-4 mb-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground">Karya Saya</h2>
-              <p className="text-muted-foreground mt-1">Setiap entri dibuat otomatis saat proyek ditandai selesai oleh klien.</p>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Karya Portofolio Saya</h2>
+              <p className="text-sm text-slate-500 font-medium mt-1">Daftar entri yang divalidasi langsung oleh sistem dari proyek selesai yang terverifikasi.</p>
             </div>
           </div>
           
@@ -403,74 +417,76 @@ export default function PortfolioPage() {
                 return (
                   <div
                     key={entry.id}
-                    className="bg-white rounded-2xl shadow-sm border border-border/40 overflow-hidden group hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col"
+                    className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.015)] border border-slate-200/50 overflow-hidden group hover:shadow-xl hover:border-primary/20 transition-all duration-500 cursor-pointer flex flex-col hover:-translate-y-1"
                     onClick={() => setSelectedEntry(entry)}
                   >
                     {/* Thumbnail */}
-                    <div className="relative h-48 md:h-56 overflow-hidden">
+                    <div className="relative h-48 md:h-52 overflow-hidden bg-slate-100">
                       <img
                         src={entry.thumbnail}
                         alt={entry.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
                       
                       {/* Category badge */}
-                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-foreground flex items-center gap-1.5">
+                      <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-extrabold text-slate-900 flex items-center gap-1.5 shadow-sm border border-slate-100">
                         <CategoryIcon className="w-3.5 h-3.5 text-primary" />
                         {entry.category}
                       </div>
                       
                       {/* View overlay */}
-                      <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors flex items-center justify-center">
-                        <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
-                          <Eye className="w-5 h-5 text-primary" />
+                      <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors flex items-center justify-center">
+                        <div className="w-11 h-11 bg-white/95 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-md transform scale-90 group-hover:scale-100">
+                          <Eye className="w-4 h-4 text-primary" />
                         </div>
                       </div>
                       
                       {/* Rating on thumbnail */}
-                      <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1">
+                      <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm border border-slate-100">
                         <Star className="w-3.5 h-3.5 text-amber-500 fill-current" />
-                        <span className="text-xs font-bold text-foreground">{entry.rating}.0</span>
+                        <span className="text-[10px] font-extrabold text-slate-900">{entry.rating}.0</span>
                       </div>
                     </div>
                     
                     {/* Content */}
-                    <div className="p-5 md:p-6 flex flex-col flex-1">
-                      <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    <div className="p-6 flex flex-col flex-1">
+                      <h3 className="text-base font-extrabold text-slate-900 mb-2 group-hover:text-primary transition-colors leading-snug line-clamp-2">
                         {entry.title}
                       </h3>
                       
                       <div className="flex items-center gap-2 mb-4">
-                        <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 border border-border/50">
+                        <div className="w-5 h-5 rounded-full overflow-hidden shrink-0 border border-slate-200">
                           <img src={entry.clientAvatar} alt={entry.client} className="w-full h-full object-cover" />
                         </div>
-                        <span className="text-sm text-muted-foreground font-medium">{entry.client}</span>
+                        <span className="text-xs text-slate-500 font-semibold">{entry.client}</span>
                       </div>
 
                       {/* Skills used */}
-                      <div className="flex flex-wrap gap-1.5 mb-4">
+                      <div className="flex flex-wrap gap-1.5 mb-5">
                         {entry.skills.slice(0, 3).map((skill: string) => (
-                          <span key={skill} className="px-2 py-0.5 bg-primary/5 text-primary text-xs font-semibold rounded-md">
+                          <span key={skill} className="px-2.5 py-1 bg-primary/5 text-primary text-[10px] font-bold rounded-lg border border-primary/10">
                             {skill}
                           </span>
                         ))}
                       </div>
                       
                       {/* Testimonial preview */}
-                      <div className="bg-muted/30 rounded-lg p-3 mt-auto">
+                      <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 mt-auto">
                         <div className="flex items-start gap-2">
-                          <Quote className="w-4 h-4 text-primary/40 shrink-0 mt-0.5" />
-                          <p className="text-xs text-muted-foreground italic line-clamp-2">{entry.testimonial}</p>
+                          <Quote className="w-4 h-4 text-primary/30 shrink-0 mt-0.5" />
+                          <p className="text-xs text-slate-500 italic leading-relaxed line-clamp-2">
+                            {entry.testimonial}
+                          </p>
                         </div>
                       </div>
                       
                       {/* Footer */}
-                      <div className="flex justify-between items-center mt-4 pt-4 border-t border-border/30 text-xs font-semibold text-muted-foreground">
+                      <div className="flex justify-between items-center mt-5 pt-4 border-t border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         <span className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5" /> {entry.completedDate}
                         </span>
-                        <span className="text-primary font-bold">{entry.budget}</span>
+                        <span className="text-primary text-xs font-extrabold">{entry.budget}</span>
                       </div>
                     </div>
                   </div>
