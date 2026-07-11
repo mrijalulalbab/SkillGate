@@ -5,7 +5,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { 
   ArrowLeft, CheckCircle2, Clock, FileText, 
   MessageSquare, UploadCloud, Users, Star, UserCheck, Loader2,
-  Check, X, Award, Printer
+  Check, X, Award, Printer,
+  Folder, FileSpreadsheet, Layers, Globe, Video, Palette, Link2
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -49,6 +50,21 @@ interface Gig {
   deliverable_message: string;
   accepted_student_id: string | null;
   skills_required: string[];
+}
+
+function getDeliverableDetails(url: string) {
+  if (!url) return { label: "Hasil_Pekerjaan_Final.zip", type: "Tautan Eksternal / Hasil Terunggah", icon: Folder };
+  if (url.includes("figma.com")) return { label: "Desain UI/UX (Figma File)", type: "Figma File Link", icon: Layers };
+  if (url.includes("canva.com")) return { label: "Template Desain (Canva Link)", type: "Canva Design Link", icon: Palette };
+  if (url.includes("instagram.com")) return { label: "Postingan Media Sosial (Instagram)", type: "Instagram Published Post", icon: Globe };
+  if (url.includes("tiktok.com")) return { label: "Video Reels/TikTok (TikTok Video)", type: "TikTok Video Link", icon: Video };
+  if (url.includes("dropbox.com")) return { label: "Arsip Aset (Dropbox Folder)", type: "Dropbox Shared Folder", icon: Folder };
+  if (url.includes("onedrive") || url.includes("1drv.ms")) return { label: "Arsip Pekerjaan (OneDrive)", type: "OneDrive Shared Folder", icon: Folder };
+  if (url.includes("docs.google.com/spreadsheets")) return { label: "Spreadsheet Data (Google Sheets)", type: "Google Sheets Spreadsheet", icon: FileSpreadsheet };
+  if (url.includes("docs.google.com/document")) return { label: "Dokumen Teks (Google Docs)", type: "Google Docs Document", icon: FileText };
+  if (url.includes("docs.google.com/forms")) return { label: "Kuesioner Digital (Google Forms)", type: "Google Forms Survey", icon: FileText };
+  if (url.includes("drive.google.com")) return { label: "Folder Proyek (Google Drive)", type: "Google Drive Folder", icon: Folder };
+  return { label: "Tautan Berkas Pekerjaan", type: "Tautan Kustom / Eksternal", icon: Link2 };
 }
 
 function calculateMatchScore(gig: Gig | null, app: Application) {
@@ -588,23 +604,29 @@ export default function UmkmProjectDetailPage() {
                     
                     {gig.deliverable_url ? (
                       <div>
-                        <div className="border border-border/50 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 bg-muted/20 mb-6">
-                          <div className="w-16 h-16 bg-white rounded-lg border border-border/50 flex items-center justify-center shrink-0">
-                            <FileText className="w-8 h-8 text-primary" />
-                          </div>
-                          <div className="flex-1 text-center sm:text-left">
-                            <h4 className="font-bold text-sm text-foreground">Hasil_Pekerjaan_Final.zip</h4>
-                            <p className="text-xs text-muted-foreground">Tautan Eksternal / Hasil Terunggah</p>
-                          </div>
-                          <a 
-                            href={gig.deliverable_url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className={buttonVariants({ variant: "outline", className: "w-full sm:w-auto font-semibold" })}
-                          >
-                            Buka Tautan
-                          </a>
-                        </div>
+                         {(() => {
+                           const details = getDeliverableDetails(gig.deliverable_url);
+                           const Icon = details.icon;
+                           return (
+                             <div className="border border-border/50 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 bg-muted/20 mb-6">
+                               <div className="w-16 h-16 bg-white rounded-lg border border-border/50 flex items-center justify-center shrink-0">
+                                 <Icon className="w-8 h-8 text-primary" />
+                               </div>
+                               <div className="flex-1 text-center sm:text-left">
+                                 <h4 className="font-bold text-sm text-foreground">{details.label}</h4>
+                                 <p className="text-xs text-muted-foreground">{details.type}</p>
+                               </div>
+                               <a 
+                                 href={gig.deliverable_url} 
+                                 target="_blank" 
+                                 rel="noopener noreferrer"
+                                 className={buttonVariants({ variant: "outline", className: "w-full sm:w-auto font-semibold" })}
+                               >
+                                 Buka Tautan
+                               </a>
+                             </div>
+                           );
+                         })()}
                         
                         <p className="text-sm text-muted-foreground mb-8 p-4 bg-muted/30 rounded-xl italic">
                           &quot;{gig.deliverable_message || "Mahasiswa telah menyerahkan file pekerjaan mereka."}&quot;

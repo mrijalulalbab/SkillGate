@@ -6,7 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { 
   ArrowLeft, CheckCircle2, Clock, FileText, 
-  MessageSquare, UploadCloud, FileImage, Send, Loader2, Printer
+  MessageSquare, UploadCloud, FileImage, Send, Loader2, Printer,
+  Folder, FileSpreadsheet, Layers, Globe, Video, Palette, Link2
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -34,6 +35,39 @@ interface Gig {
   };
 }
 
+const SUBMISSION_OPTIONS: Record<string, { value: string; label: string; placeholder: string; desc: string; icon: any }[]> = {
+  "Desain Grafis": [
+    { value: "figma", label: "Figma Link", placeholder: "https://www.figma.com/file/...", desc: "Tautan dokumen desain Figma aktif", icon: Layers },
+    { value: "canva", label: "Canva Design Link", placeholder: "https://www.canva.com/design/...", desc: "Tautan template/desain Canva", icon: Palette },
+    { value: "google_drive", label: "Google Drive Folder", placeholder: "https://drive.google.com/drive/folders/...", desc: "Folder Google Drive berisi aset desain", icon: Folder },
+    { value: "other", label: "Tautan Kustom", placeholder: "https://...", desc: "Tautan eksternal lainnya", icon: Link2 },
+  ],
+  "Media Sosial": [
+    { value: "instagram", label: "Instagram Post", placeholder: "https://www.instagram.com/p/...", desc: "Tautan postingan Instagram yang terbit", icon: Globe },
+    { value: "tiktok", label: "Video TikTok", placeholder: "https://www.tiktok.com/@username/video/...", desc: "Tautan video TikTok yang diunggah", icon: Video },
+    { value: "canva", label: "Canva Feed Link", placeholder: "https://www.canva.com/design/...", desc: "Tautan draf feed Canva", icon: Palette },
+    { value: "google_drive", label: "Google Drive Folder", placeholder: "https://drive.google.com/drive/folders/...", desc: "Folder Google Drive berisi aset & copywriting", icon: Folder },
+    { value: "other", label: "Tautan Kustom", placeholder: "https://...", desc: "Tautan eksternal lainnya", icon: Link2 },
+  ],
+  "Fotografi": [
+    { value: "google_drive", label: "Google Drive Folder", placeholder: "https://drive.google.com/drive/folders/...", desc: "Folder Google Drive berisi foto asli HD", icon: Folder },
+    { value: "dropbox", label: "Dropbox Folder", placeholder: "https://www.dropbox.com/sh/...", desc: "Folder Dropbox penyimpanan foto", icon: Folder },
+    { value: "onedrive", label: "OneDrive Link", placeholder: "https://1drv.ms/f/...", desc: "Tautan folder OneDrive", icon: Folder },
+    { value: "other", label: "Tautan Kustom", placeholder: "https://...", desc: "Tautan eksternal lainnya", icon: Link2 },
+  ],
+  "Administrasi": [
+    { value: "google_sheets", label: "Google Sheets Link", placeholder: "https://docs.google.com/spreadsheets/d/...", desc: "Tautan spreadsheet data online", icon: FileSpreadsheet },
+    { value: "google_docs", label: "Google Docs Link", placeholder: "https://docs.google.com/document/d/...", desc: "Tautan dokumen teks Google Docs", icon: FileText },
+    { value: "google_forms", label: "Google Forms Link", placeholder: "https://docs.google.com/forms/d/...", desc: "Tautan kuesioner Google Form", icon: FileText },
+    { value: "other", label: "Tautan Kustom", placeholder: "https://...", desc: "Tautan eksternal lainnya", icon: Link2 },
+  ],
+};
+
+const DEFAULT_OPTIONS = [
+  { value: "google_drive", label: "Google Drive", placeholder: "https://drive.google.com/...", desc: "Tautan folder Google Drive", icon: Folder },
+  { value: "other", label: "Tautan Kustom", placeholder: "https://...", desc: "Tautan eksternal lainnya", icon: Link2 },
+];
+
 export default function DetailProyekStudentPage() {
   const router = useRouter();
   const params = useParams();
@@ -44,6 +78,7 @@ export default function DetailProyekStudentPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submissionType, setSubmissionType] = useState("google_drive");
   const [deliverableUrl, setDeliverableUrl] = useState("");
   const [message, setMessage] = useState("");
 
@@ -89,6 +124,25 @@ export default function DetailProyekStudentPage() {
         setSubmitted(true);
         setDeliverableUrl(data.deliverable_url);
         setMessage(data.deliverable_message || "");
+        
+        const url = data.deliverable_url;
+        if (url.includes("figma.com")) setSubmissionType("figma");
+        else if (url.includes("canva.com")) setSubmissionType("canva");
+        else if (url.includes("instagram.com")) setSubmissionType("instagram");
+        else if (url.includes("tiktok.com")) setSubmissionType("tiktok");
+        else if (url.includes("dropbox.com")) setSubmissionType("dropbox");
+        else if (url.includes("onedrive") || url.includes("1drv.ms")) setSubmissionType("onedrive");
+        else if (url.includes("docs.google.com/spreadsheets")) setSubmissionType("google_sheets");
+        else if (url.includes("docs.google.com/document")) setSubmissionType("google_docs");
+        else if (url.includes("docs.google.com/forms")) setSubmissionType("google_forms");
+        else if (url.includes("drive.google.com")) setSubmissionType("google_drive");
+        else setSubmissionType("other");
+      } else {
+        if (data.category === "Desain Grafis") setSubmissionType("figma");
+        else if (data.category === "Media Sosial") setSubmissionType("instagram");
+        else if (data.category === "Fotografi") setSubmissionType("google_drive");
+        else if (data.category === "Administrasi") setSubmissionType("google_sheets");
+        else setSubmissionType("google_drive");
       }
     } catch (e) {
       console.error("Error loading gig details:", e);
@@ -332,11 +386,54 @@ export default function DetailProyekStudentPage() {
                 </h3>
                 
                 <div className="space-y-6">
+                  {/* Format Selector */}
                   <div>
-                    <h4 className="text-sm font-bold text-foreground mb-2">Tautan Berkas (Link Google Drive, Figma, atau Dropbox)</h4>
+                    <h4 className="text-sm font-bold text-foreground mb-3">Format Penyerahan Hasil Kerja</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(SUBMISSION_OPTIONS[gig?.category || ""] || DEFAULT_OPTIONS).map((opt) => {
+                        const Icon = opt.icon;
+                        const isSelected = submissionType === opt.value;
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => {
+                              setSubmissionType(opt.value);
+                              // Clear URL if switching to prevent submitting invalid placeholder formats
+                              setDeliverableUrl("");
+                            }}
+                            className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between gap-3 transition-all duration-250 hover:shadow-sm ${
+                              isSelected
+                                ? "border-primary bg-primary/5 text-primary ring-1 ring-primary"
+                                : "border-border/60 hover:border-border/80 text-foreground"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <span className="text-xs font-bold tracking-tight">{opt.label}</span>
+                              <Icon className={`w-4 h-4 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                            </div>
+                            <span className="text-[10px] text-muted-foreground leading-normal line-clamp-1">
+                              {opt.desc}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* URL Input */}
+                  <div>
+                    <h4 className="text-sm font-bold text-foreground mb-2 flex items-center gap-1.5">
+                      <span>Tautan Tautan Berkas ({
+                        (SUBMISSION_OPTIONS[gig?.category || ""] || DEFAULT_OPTIONS).find(o => o.value === submissionType)?.label || "Tautan"
+                      })</span>
+                    </h4>
                     <Input 
                       type="url"
-                      placeholder="https://drive.google.com/..." 
+                      placeholder={
+                        (SUBMISSION_OPTIONS[gig?.category || ""] || DEFAULT_OPTIONS).find(o => o.value === submissionType)?.placeholder || 
+                        "https://..."
+                      } 
                       className="rounded-xl border-border/60"
                       value={deliverableUrl}
                       onChange={(e) => setDeliverableUrl(e.target.value)}
